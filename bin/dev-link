@@ -17,17 +17,23 @@ for name in "${packages[@]}"; do
 done
 
 # Path repositories must come before the GitHub ones, or Composer would still pick GitHub.
-ddev exec php -r '
-  $file = "composer.json";
-  $json = json_decode(file_get_contents($file), true);
-  $local = [];
-  foreach (["core", "entitlements"] as $name) {
-      $local[] = ["type" => "path", "url" => "/var/www/forumkit-{$name}", "options" => ["symlink" => true]];
-  }
-  $rest = array_values(array_filter($json["repositories"] ?? [], fn ($r) => ($r["type"] ?? "") !== "path"));
-  $json["repositories"] = array_merge($local, $rest);
-  file_put_contents($file, json_encode($json, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE)."\n");
-'
+python3 - <<'PY'
+import json
+
+with open("composer.json") as handle:
+    data = json.load(handle)
+
+local = [
+    {"type": "path", "url": f"/var/www/forumkit-{name}", "options": {"symlink": True}}
+    for name in ("core", "entitlements")
+]
+rest = [repo for repo in data.get("repositories", []) if repo.get("type") != "path"]
+data["repositories"] = local + rest
+
+with open("composer.json", "w") as handle:
+    json.dump(data, handle, indent=4, ensure_ascii=False)
+    handle.write("\n")
+PY
 
 ddev restart >/dev/null
 ddev composer require --no-interaction \
