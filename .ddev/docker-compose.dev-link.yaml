@@ -1,0 +1,7 @@
+# Mounts the sibling ForumKit checkouts into the web container so `bin/dev-link` can
+# symlink them into vendor/. Missing folders are simply empty mounts.
+services:
+  web:
+    volumes:
+      - ../../forumkit-core:/var/www/forumkit-core
+      - ../../forumkit-entitlements:/var/www/forumkit-entitlements

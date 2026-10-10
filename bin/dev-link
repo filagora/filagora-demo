@@ -1,0 +1,39 @@
+#!/usr/bin/env bash
+# Use the local ForumKit checkouts (../forumkit-*) instead of the GitHub versions, so a
+# change in a package shows up here at once. Run inside the project; needs DDEV.
+#
+# This edits composer.json and composer.lock. Do not commit those changes: run
+# bin/dev-unlink first.
+set -euo pipefail
+cd "$(dirname "$0")/.."
+
+packages=(core entitlements)
+
+for name in "${packages[@]}"; do
+  if [ ! -d "../forumkit-${name}" ]; then
+    echo "Missing ../forumkit-${name}: clone it next to this project first." >&2
+    exit 1
+  fi
+done
+
+# Path repositories must come before the GitHub ones, or Composer would still pick GitHub.
+ddev exec php -r '
+  $file = "composer.json";
+  $json = json_decode(file_get_contents($file), true);
+  $local = [];
+  foreach (["core", "entitlements"] as $name) {
+      $local[] = ["type" => "path", "url" => "/var/www/forumkit-{$name}", "options" => ["symlink" => true]];
+  }
+  $rest = array_values(array_filter($json["repositories"] ?? [], fn ($r) => ($r["type"] ?? "") !== "path"));
+  $json["repositories"] = array_merge($local, $rest);
+  file_put_contents($file, json_encode($json, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE)."\n");
+'
+
+ddev restart >/dev/null
+ddev composer require --no-interaction \
+  zencart/forumkit-core:@dev \
+  zencart/forumkit-entitlements:@dev
+
+echo
+echo "Linked. vendor/zencart/ now points at your checkouts:"
+ls -l vendor/zencart
