@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "05596dc0364ab71765c5e44d5850bdc7",
+    "content-hash": "3dbe2b8109a2a6f9b26cbb742c3d95e1",
     "packages": [
         {
             "name": "anourvalar/eloquent-serialize",
@@ -8364,22 +8364,7 @@
                     "ForumKit\\Core\\": "src/"
                 }
             },
-            "autoload-dev": {
-                "psr-4": {
-                    "ForumKit\\Core\\Tests\\": "tests/"
-                }
-            },
-            "scripts": {
-                "test": [
-                    "vendor/bin/pest"
-                ],
-                "lint": [
-                    "vendor/bin/pint"
-                ],
-                "analyse": [
-                    "vendor/bin/phpstan analyse --memory-limit=1G"
-                ]
-            },
+            "notification-url": "https://packagist.org/downloads/",
             "license": [
                 "MIT"
             ],
@@ -8391,8 +8376,8 @@
                 "laravel"
             ],
             "support": {
-                "source": "https://github.com/zcwilt/forumkit-core/tree/v0.1.0",
-                "issues": "https://github.com/zcwilt/forumkit-core/issues"
+                "issues": "https://github.com/zcwilt/forumkit-core/issues",
+                "source": "https://github.com/zcwilt/forumkit-core/tree/v0.1.0"
             },
             "time": "2026-10-10T18:06:09+00:00"
         },
@@ -8435,22 +8420,7 @@
                     "ForumKit\\Entitlements\\": "src/"
                 }
             },
-            "autoload-dev": {
-                "psr-4": {
-                    "ForumKit\\Entitlements\\Tests\\": "tests/"
-                }
-            },
-            "scripts": {
-                "test": [
-                    "vendor/bin/pest"
-                ],
-                "lint": [
-                    "vendor/bin/pint"
-                ],
-                "analyse": [
-                    "vendor/bin/phpstan analyse --memory-limit=1G"
-                ]
-            },
+            "notification-url": "https://packagist.org/downloads/",
             "license": [
                 "MIT"
             ],
@@ -8462,8 +8432,8 @@
                 "laravel"
             ],
             "support": {
-                "source": "https://github.com/zcwilt/forumkit-entitlements/tree/v0.1.0",
-                "issues": "https://github.com/zcwilt/forumkit-entitlements/issues"
+                "issues": "https://github.com/zcwilt/forumkit-entitlements/issues",
+                "source": "https://github.com/zcwilt/forumkit-entitlements/tree/v0.1.0"
             },
             "time": "2026-10-10T18:24:42+00:00"
         }

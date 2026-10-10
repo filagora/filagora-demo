@@ -16,7 +16,7 @@ for name in "${packages[@]}"; do
   fi
 done
 
-# Path repositories must come before the GitHub ones, or Composer would still pick GitHub.
+# Local path repositories come first, so Composer prefers them over Packagist.
 python3 - <<'PY'
 import json
 
