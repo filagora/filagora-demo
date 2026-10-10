@@ -4,8 +4,8 @@ A clean Laravel 13 and Filament 5 application that installs the ForumKit package
 to try them, to develop them side by side, and as a worked example of wiring them into
 your own app.
 
-> Work in progress: the packages are `0.x` and not yet tagged, so they install from
-> their GitHub repositories (`dev-master`).
+> The packages are at `0.1` (the API may change between `0.x` minor versions) and are not
+> yet on Packagist, so `composer.json` lists their GitHub repositories.
 
 | Package | What it adds |
 | --- | --- |

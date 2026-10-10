@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "3e7c46f05782ae0c9ae28c99c2355931",
+    "content-hash": "05596dc0364ab71765c5e44d5850bdc7",
     "packages": [
         {
             "name": "anourvalar/eloquent-serialize",
@@ -8327,16 +8327,16 @@
         },
         {
             "name": "zencart/forumkit-core",
-            "version": "dev-master",
+            "version": "v0.1.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/zcwilt/forumkit-core.git",
-                "reference": "152d6254868194fef19a3a3403148e162abdccd7"
+                "reference": "869a8f67844cba7a5626811d57e66a3b8db26085"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/zcwilt/forumkit-core/zipball/152d6254868194fef19a3a3403148e162abdccd7",
-                "reference": "152d6254868194fef19a3a3403148e162abdccd7",
+                "url": "https://api.github.com/repos/zcwilt/forumkit-core/zipball/869a8f67844cba7a5626811d57e66a3b8db26085",
+                "reference": "869a8f67844cba7a5626811d57e66a3b8db26085",
                 "shasum": ""
             },
             "require": {
@@ -8351,7 +8351,6 @@
                 "pestphp/pest": "^4.0",
                 "pestphp/pest-plugin-laravel": "^4.0"
             },
-            "default-branch": true,
             "type": "library",
             "extra": {
                 "laravel": {
@@ -8392,29 +8391,29 @@
                 "laravel"
             ],
             "support": {
-                "source": "https://github.com/zcwilt/forumkit-core/tree/master",
+                "source": "https://github.com/zcwilt/forumkit-core/tree/v0.1.0",
                 "issues": "https://github.com/zcwilt/forumkit-core/issues"
             },
-            "time": "2026-10-10T17:24:36+00:00"
+            "time": "2026-10-10T18:06:09+00:00"
         },
         {
             "name": "zencart/forumkit-entitlements",
-            "version": "dev-master",
+            "version": "v0.1.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/zcwilt/forumkit-entitlements.git",
-                "reference": "37778291b71c5ac14b2ee0d18f2209a88f38f607"
+                "reference": "99b4125969e98f9091254a078bc3477ffc365d53"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/zcwilt/forumkit-entitlements/zipball/37778291b71c5ac14b2ee0d18f2209a88f38f607",
-                "reference": "37778291b71c5ac14b2ee0d18f2209a88f38f607",
+                "url": "https://api.github.com/repos/zcwilt/forumkit-entitlements/zipball/99b4125969e98f9091254a078bc3477ffc365d53",
+                "reference": "99b4125969e98f9091254a078bc3477ffc365d53",
                 "shasum": ""
             },
             "require": {
                 "filament/filament": "^5.0",
                 "php": "^8.4",
-                "zencart/forumkit-core": "dev-master"
+                "zencart/forumkit-core": "^0.1"
             },
             "require-dev": {
                 "larastan/larastan": "^3.0",
@@ -8423,7 +8422,6 @@
                 "pestphp/pest": "^4.0",
                 "pestphp/pest-plugin-laravel": "^4.0"
             },
-            "default-branch": true,
             "type": "library",
             "extra": {
                 "laravel": {
@@ -8464,10 +8462,10 @@
                 "laravel"
             ],
             "support": {
-                "source": "https://github.com/zcwilt/forumkit-entitlements/tree/master",
+                "source": "https://github.com/zcwilt/forumkit-entitlements/tree/v0.1.0",
                 "issues": "https://github.com/zcwilt/forumkit-entitlements/issues"
             },
-            "time": "2026-10-10T17:27:19+00:00"
+            "time": "2026-10-10T18:24:42+00:00"
         }
     ],
     "packages-dev": [
@@ -11944,10 +11942,7 @@
     ],
     "aliases": [],
     "minimum-stability": "stable",
-    "stability-flags": {
-        "zencart/forumkit-core": 20,
-        "zencart/forumkit-entitlements": 20
-    },
+    "stability-flags": {},
     "prefer-stable": true,
     "prefer-lowest": false,
     "platform": {
