@@ -23,8 +23,16 @@ import json
 with open("composer.json") as handle:
     data = json.load(handle)
 
+# A symlinked checkout reports itself as dev-master, which would not satisfy the packages'
+# own ^0.1 constraints on each other, so say which release line the checkouts stand for.
+# Bump this when the packages move to a new 0.x minor.
+line = "0.1.x-dev"
 local = [
-    {"type": "path", "url": f"/var/www/forumkit-{name}", "options": {"symlink": True}}
+    {
+        "type": "path",
+        "url": f"/var/www/forumkit-{name}",
+        "options": {"symlink": True, "versions": {f"zencart/forumkit-{name}": line}},
+    }
     for name in ("core", "entitlements")
 ]
 rest = [repo for repo in data.get("repositories", []) if repo.get("type") != "path"]
