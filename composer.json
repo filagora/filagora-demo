@@ -85,15 +85,5 @@
         }
     },
     "minimum-stability": "stable",
-    "prefer-stable": true,
-    "repositories": [
-        {
-            "type": "vcs",
-            "url": "https://github.com/zcwilt/forumkit-core"
-        },
-        {
-            "type": "vcs",
-            "url": "https://github.com/zcwilt/forumkit-entitlements"
-        }
-    ]
+    "prefer-stable": true
 }

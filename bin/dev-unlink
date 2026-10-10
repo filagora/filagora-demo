@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Undo bin/dev-link: go back to the committed composer.json and composer.lock and the
-# GitHub versions of the ForumKit packages.
+# Packagist versions of the ForumKit packages.
 set -euo pipefail
 cd "$(dirname "$0")/.."
 
@@ -8,4 +8,4 @@ git checkout -- composer.json composer.lock
 ddev composer install --no-interaction
 
 echo
-echo "Unlinked. vendor/zencart/ is back to the installed GitHub versions."
+echo "Unlinked. vendor/zencart/ is back to the installed Packagist versions."
