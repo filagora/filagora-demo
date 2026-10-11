@@ -6,10 +6,13 @@ your own app.
 
 > The packages are at `0.1`: the API may change between `0.x` minor versions.
 
-| Package | What it adds |
-| --- | --- |
-| [`zencart/forumkit-core`](https://github.com/zcwilt/forumkit-core) | Module and navigation registries, table prefix, user model resolution, system settings, markdown, `forumkit:doctor`, `forumkit:install`, `forumkit:adopt` |
-| [`zencart/forumkit-entitlements`](https://github.com/zcwilt/forumkit-entitlements) | Entitlement definitions, grants, default grants, requests, the resolver and authorization service, and the staff screens |
+| Package (Composer) | Source (GitHub) | What it adds |
+| --- | --- | --- |
+| `zencart/forumkit-core` | [zcwilt/forumkit-core](https://github.com/zcwilt/forumkit-core) | Module and navigation registries, table prefix, user model resolution, system settings, markdown, `forumkit:doctor`, `forumkit:install`, `forumkit:adopt` |
+| `zencart/forumkit-entitlements` | [zcwilt/forumkit-entitlements](https://github.com/zcwilt/forumkit-entitlements) | Entitlement definitions, grants, default grants, requests, the resolver and authorization service, and the staff screens |
+
+`zencart` is the Composer vendor name the packages are published under. The repositories
+live under `zcwilt` on GitHub for now.
 
 ## Run it locally (DDEV)
 
@@ -62,6 +65,11 @@ These passwords are public. This is a development app, never deploy it.
 ## Develop the packages alongside this app
 
 Clone the packages next to this project:
+
+```bash
+git clone https://github.com/zcwilt/forumkit-core.git
+git clone https://github.com/zcwilt/forumkit-entitlements.git
+```
 
 ```
 forumkit/
