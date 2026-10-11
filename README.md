@@ -6,13 +6,10 @@ your own app.
 
 > The packages are at `0.1`: the API may change between `0.x` minor versions.
 
-| Package (Composer) | Source (GitHub) | What it adds |
-| --- | --- | --- |
-| `zencart/forumkit-core` | [zcwilt/forumkit-core](https://github.com/zcwilt/forumkit-core) | Module and navigation registries, table prefix, user model resolution, system settings, markdown, `forumkit:doctor`, `forumkit:install`, `forumkit:adopt` |
-| `zencart/forumkit-entitlements` | [zcwilt/forumkit-entitlements](https://github.com/zcwilt/forumkit-entitlements) | Entitlement definitions, grants, default grants, requests, the resolver and authorization service, and the staff screens |
-
-`zencart` is the Composer vendor name the packages are published under. The repositories
-live under `zcwilt` on GitHub for now.
+| Package | What it adds |
+| --- | --- |
+| [`zcwilt/forumkit-core`](https://github.com/zcwilt/forumkit-core) | Module and navigation registries, table prefix, user model resolution, system settings, markdown, `forumkit:doctor`, `forumkit:install`, `forumkit:adopt` |
+| [`zcwilt/forumkit-entitlements`](https://github.com/zcwilt/forumkit-entitlements) | Entitlement definitions, grants, default grants, requests, the resolver and authorization service, and the staff screens |
 
 ## Run it locally (DDEV)
 
@@ -39,7 +36,7 @@ These passwords are public. This is a development app, never deploy it.
 
 ## How the packages are wired in
 
-1. **Install:** `composer require zencart/forumkit-core zencart/forumkit-entitlements`,
+1. **Install:** `composer require zcwilt/forumkit-core zcwilt/forumkit-entitlements`,
    then `php artisan forumkit:install` (publishes config, migrates, runs the doctor).
 2. **Register the plugins** on the panel
    ([`AdminPanelProvider`](app/Providers/Filament/AdminPanelProvider.php)):
@@ -81,7 +78,7 @@ forumkit/
 then:
 
 ```bash
-bin/dev-link     # vendor/zencart/* now symlinks to your checkouts
+bin/dev-link     # vendor/zcwilt/* now symlinks to your checkouts
 bin/dev-unlink   # back to the committed composer.json and composer.lock
 ```
 
