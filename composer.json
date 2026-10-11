@@ -1,6 +1,6 @@
 {
     "$schema": "https://getcomposer.org/schema.json",
-    "name": "zencart/forumkit-demo",
+    "name": "zcwilt/forumkit-demo",
     "type": "project",
     "description": "A Laravel 13 and Filament 5 app that installs the ForumKit packages: development, docs and install smoke tests.",
     "license": "MIT",
@@ -9,8 +9,8 @@
         "filament/filament": "^5.0",
         "laravel/framework": "^13.17",
         "laravel/tinker": "^3.0",
-        "zencart/forumkit-core": "^0.1",
-        "zencart/forumkit-entitlements": "^0.1"
+        "zcwilt/forumkit-core": "^0.1",
+        "zcwilt/forumkit-entitlements": "^0.1"
     },
     "require-dev": {
         "fakerphp/faker": "^1.23",

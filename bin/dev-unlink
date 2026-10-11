@@ -8,4 +8,4 @@ git checkout -- composer.json composer.lock
 ddev composer install --no-interaction
 
 echo
-echo "Unlinked. vendor/zencart/ is back to the installed Packagist versions."
+echo "Unlinked. vendor/zcwilt/ is back to the installed Packagist versions."

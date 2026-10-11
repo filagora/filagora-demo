@@ -31,7 +31,7 @@ local = [
     {
         "type": "path",
         "url": f"/var/www/forumkit-{name}",
-        "options": {"symlink": True, "versions": {f"zencart/forumkit-{name}": line}},
+        "options": {"symlink": True, "versions": {f"zcwilt/forumkit-{name}": line}},
     }
     for name in ("core", "entitlements")
 ]
@@ -45,9 +45,9 @@ PY
 
 ddev restart >/dev/null
 ddev composer require --no-interaction \
-  zencart/forumkit-core:@dev \
-  zencart/forumkit-entitlements:@dev
+  zcwilt/forumkit-core:@dev \
+  zcwilt/forumkit-entitlements:@dev
 
 echo
-echo "Linked. vendor/zencart/ now points at your checkouts:"
-ls -l vendor/zencart
+echo "Linked. vendor/zcwilt/ now points at your checkouts:"
+ls -l vendor/zcwilt
