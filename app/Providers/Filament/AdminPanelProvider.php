@@ -14,6 +14,8 @@ use Filament\Widgets\AccountWidget;
 use Filament\Widgets\FilamentInfoWidget;
 use ForumKit\Core\ForumKitCorePlugin;
 use ForumKit\Entitlements\ForumKitEntitlementsPlugin;
+use ForumKit\Forums\Filament\Widgets\ModerationQueueStats;
+use ForumKit\Forums\ForumKitForumsPlugin;
 use Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse;
 use Illuminate\Cookie\Middleware\EncryptCookies;
 use Illuminate\Foundation\Http\Middleware\PreventRequestForgery;
@@ -39,6 +41,7 @@ class AdminPanelProvider extends PanelProvider
             ->plugins([
                 ForumKitCorePlugin::make(),
                 ForumKitEntitlementsPlugin::make(),
+                ForumKitForumsPlugin::make(),
             ])
             ->pages([
                 Dashboard::class,
@@ -47,6 +50,7 @@ class AdminPanelProvider extends PanelProvider
             ->widgets([
                 AccountWidget::class,
                 FilamentInfoWidget::class,
+                ModerationQueueStats::class,
             ])
             ->middleware([
                 EncryptCookies::class,
