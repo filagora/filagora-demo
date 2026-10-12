@@ -16,6 +16,14 @@ use ForumKit\Entitlements\Filament\Resources\EntitlementRequests\Pages\ViewEntit
 use ForumKit\Entitlements\Filament\Resources\UserEntitlementGrants\UserEntitlementGrantResource;
 use ForumKit\Entitlements\Models\EntitlementRequest;
 use ForumKit\Entitlements\Services\EntitlementResolver;
+use ForumKit\Forums\Filament\Pages\ModerationQueue;
+use ForumKit\Forums\Filament\Resources\ForumGroups\ForumGroupResource;
+use ForumKit\Forums\Filament\Resources\Forums\ForumResource;
+use ForumKit\Forums\Filament\Resources\PostReports\PostReportResource;
+use ForumKit\Forums\Filament\Resources\Posts\PostResource;
+use ForumKit\Forums\Filament\Resources\Threads\ThreadResource;
+use ForumKit\Forums\Models\PostReport;
+use ForumKit\Forums\Models\Thread;
 use Livewire\Livewire;
 
 use function Pest\Laravel\actingAs;
@@ -54,6 +62,12 @@ it('opens the dashboard and every ForumKit screen for staff', function () {
         DefaultEntitlementGrantResource::getUrl('index'),
         EntitlementRequestResource::getUrl('index'),
         UserResource::getUrl('index'),
+        ForumGroupResource::getUrl('index'),
+        ForumResource::getUrl('index'),
+        ThreadResource::getUrl('index'),
+        PostResource::getUrl('index'),
+        PostReportResource::getUrl('index'),
+        ModerationQueue::getUrl(),
     ] as $url) {
         get($url)->assertOk();
     }
@@ -71,6 +85,10 @@ it('keeps staff screens closed to a member without entitlements', function () {
         DefaultEntitlementGrantResource::getUrl('index'),
         EntitlementRequestResource::getUrl('index'),
         UserResource::getUrl('index'),
+        ForumResource::getUrl('index'),
+        ThreadResource::getUrl('index'),
+        PostReportResource::getUrl('index'),
+        ModerationQueue::getUrl(),
     ] as $url) {
         get($url)->assertForbidden();
     }
@@ -118,9 +136,27 @@ it('lets staff approve a member request, and the member then holds the entitleme
         ->and(app(EntitlementResolver::class)->hasEntitlement($this->member, 'demo.early-access'))->toBeTrue();
 });
 
+it('lets staff approve the queued thread and resolve the reported reply', function () {
+    actingAs($this->admin);
+    Filament::setCurrentPanel('admin');
+    $pending = Thread::where('slug', 'first-post')->sole();
+    $report = PostReport::sole();
+
+    Livewire::test(ModerationQueue::class)
+        ->assertSee('My first post')
+        ->assertSee('Buy cheap watches here!')
+        ->callAction('approveThread', [], ['id' => $pending->id])
+        ->callAction('resolveReport', ['outcome' => 'remove', 'note' => 'Spam'], ['id' => $report->post_id]);
+
+    expect($pending->refresh()->isApproved())->toBeTrue()
+        ->and($report->refresh()->post->is_deleted)->toBeTrue();
+});
+
 it('seeds idempotently', function () {
     seed(DemoSeeder::class);
 
     expect(User::count())->toBe(2)
-        ->and(EntitlementRequest::count())->toBe(1);
+        ->and(EntitlementRequest::count())->toBe(1)
+        ->and(Thread::count())->toBe(2)
+        ->and(PostReport::count())->toBe(1);
 });

@@ -10,7 +10,8 @@
         "laravel/framework": "^13.17",
         "laravel/tinker": "^3.0",
         "zcwilt/forumkit-core": "^0.1",
-        "zcwilt/forumkit-entitlements": "^0.1"
+        "zcwilt/forumkit-entitlements": "^0.1",
+        "zcwilt/forumkit-forums": "^0.1"
     },
     "require-dev": {
         "fakerphp/faker": "^1.23",

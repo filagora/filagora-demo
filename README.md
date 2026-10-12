@@ -10,6 +10,7 @@ your own app.
 | --- | --- |
 | [`zcwilt/forumkit-core`](https://github.com/zcwilt/forumkit-core) | Module and navigation registries, table prefix, user model resolution, system settings, markdown, `forumkit:doctor`, `forumkit:install`, `forumkit:adopt` |
 | [`zcwilt/forumkit-entitlements`](https://github.com/zcwilt/forumkit-entitlements) | Entitlement definitions, grants, default grants, requests, the resolver and authorization service, and the staff screens |
+| [`zcwilt/forumkit-forums`](https://github.com/zcwilt/forumkit-forums) | Forum groups, forums, threads and posts with visibility and posting rules, moderation, reports, and the staff screens and moderation queue (no public frontend) |
 
 ## Run it locally (DDEV)
 
@@ -32,12 +33,17 @@ The seeded member has one pending entitlement request. Approve it from
 **Queues → Entitlement requests**, then check **Members → Users → Demo Member** to see the
 grant it created.
 
+The seeded forum has a thread waiting for approval and a reported reply: open **Queues →
+Moderation queue** to approve the thread and resolve the report, or browse **Forum →
+Forums, Threads, Posts**. The dashboard shows how much is waiting.
+
 These passwords are public. This is a development app, never deploy it.
 
 ## How the packages are wired in
 
-1. **Install:** `composer require zcwilt/forumkit-core zcwilt/forumkit-entitlements`,
-   then `php artisan forumkit:install` (publishes config, migrates, runs the doctor).
+1. **Install:** `composer require zcwilt/forumkit-core zcwilt/forumkit-entitlements zcwilt/forumkit-forums`,
+   then `php artisan forumkit:install` (publishes config, migrates, runs the doctor) and
+   `php artisan forumkit:entitlements:sync`.
 2. **Register the plugins** on the panel
    ([`AdminPanelProvider`](app/Providers/Filament/AdminPanelProvider.php)):
 
@@ -45,6 +51,7 @@ These passwords are public. This is a development app, never deploy it.
    ->plugins([
        ForumKitCorePlugin::make(),
        ForumKitEntitlementsPlugin::make(),
+       ForumKitForumsPlugin::make(),
    ])
    ```
 
@@ -66,12 +73,14 @@ Clone the packages next to this project:
 ```bash
 git clone https://github.com/zcwilt/forumkit-core.git
 git clone https://github.com/zcwilt/forumkit-entitlements.git
+git clone https://github.com/zcwilt/forumkit-forums.git
 ```
 
 ```
 forumkit/
   forumkit-core/
   forumkit-entitlements/
+  forumkit-forums/
   forumkit-demo/        <- this
 ```
 

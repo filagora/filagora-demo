@@ -7,7 +7,7 @@
 set -euo pipefail
 cd "$(dirname "$0")/.."
 
-packages=(core entitlements)
+packages=(core entitlements forums)
 
 for name in "${packages[@]}"; do
   if [ ! -d "../forumkit-${name}" ]; then
@@ -33,7 +33,7 @@ local = [
         "url": f"/var/www/forumkit-{name}",
         "options": {"symlink": True, "versions": {f"zcwilt/forumkit-{name}": line}},
     }
-    for name in ("core", "entitlements")
+    for name in ("core", "entitlements", "forums")
 ]
 rest = [repo for repo in data.get("repositories", []) if repo.get("type") != "path"]
 data["repositories"] = local + rest
@@ -46,7 +46,8 @@ PY
 ddev restart >/dev/null
 ddev composer require --no-interaction \
   zcwilt/forumkit-core:@dev \
-  zcwilt/forumkit-entitlements:@dev
+  zcwilt/forumkit-entitlements:@dev \
+  zcwilt/forumkit-forums:@dev
 
 echo
 echo "Linked. vendor/zcwilt/ now points at your checkouts:"
