@@ -24,6 +24,8 @@ use ForumKit\Forums\Filament\Resources\Posts\PostResource;
 use ForumKit\Forums\Filament\Resources\Threads\ThreadResource;
 use ForumKit\Forums\Models\PostReport;
 use ForumKit\Forums\Models\Thread;
+use ForumKit\Logs\Filament\Resources\EmailLogs\EmailLogResource;
+use ForumKit\Logs\Models\EmailLog;
 use Livewire\Livewire;
 
 use function Pest\Laravel\actingAs;
@@ -68,6 +70,7 @@ it('opens the dashboard and every ForumKit screen for staff', function () {
         PostResource::getUrl('index'),
         PostReportResource::getUrl('index'),
         ModerationQueue::getUrl(),
+        EmailLogResource::getUrl('index'),
     ] as $url) {
         get($url)->assertOk();
     }
@@ -89,6 +92,7 @@ it('keeps staff screens closed to a member without entitlements', function () {
         ThreadResource::getUrl('index'),
         PostReportResource::getUrl('index'),
         ModerationQueue::getUrl(),
+        EmailLogResource::getUrl('index'),
     ] as $url) {
         get($url)->assertForbidden();
     }
@@ -158,5 +162,6 @@ it('seeds idempotently', function () {
     expect(User::count())->toBe(2)
         ->and(EntitlementRequest::count())->toBe(1)
         ->and(Thread::count())->toBe(2)
-        ->and(PostReport::count())->toBe(1);
+        ->and(PostReport::count())->toBe(1)
+        ->and(EmailLog::count())->toBe(1);
 });

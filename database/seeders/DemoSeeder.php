@@ -3,6 +3,7 @@
 namespace Database\Seeders;
 
 use App\Models\User;
+use ForumKit\Core\Models\Setting;
 use ForumKit\Entitlements\Enums\EntitlementRequestStatus;
 use ForumKit\Entitlements\Models\EntitlementDefinition;
 use ForumKit\Entitlements\Models\EntitlementRequest;
@@ -12,6 +13,7 @@ use ForumKit\Forums\Models\ForumGroup;
 use ForumKit\Forums\Models\Post;
 use ForumKit\Forums\Models\PostReport;
 use ForumKit\Forums\Models\Thread;
+use ForumKit\Logs\Models\EmailLog;
 use Illuminate\Database\Seeder;
 
 /**
@@ -51,6 +53,7 @@ class DemoSeeder extends Seeder
         );
 
         $this->seedForum($admin, $member);
+        $this->seedEmailLog($member);
     }
 
     /**
@@ -84,5 +87,24 @@ class DemoSeeder extends Seeder
         if ($pending->posts()->doesntExist()) {
             Post::query()->create(['thread_id' => $pending->id, 'author_id' => $member->id, 'body' => 'Hi all, new here.', 'content_format' => 'markdown', 'moderation_status' => 'pending']);
         }
+    }
+
+    /**
+     * Email logging switched on, with one logged message so the Email log screen has a row.
+     */
+    private function seedEmailLog(User $member): void
+    {
+        Setting::query()->updateOrCreate(['key' => 'mail_log_sending'], ['value' => '1', 'value_type' => 'boolean']);
+
+        EmailLog::query()->firstOrCreate(
+            ['correlation_id' => 'demo-welcome'],
+            [
+                'status' => 'sent',
+                'mailer' => 'log',
+                'to' => [$member->email],
+                'subject' => 'Welcome to the demo',
+                'sent_at' => now(),
+            ],
+        );
     }
 }

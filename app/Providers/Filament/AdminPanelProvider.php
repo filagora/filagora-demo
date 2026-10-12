@@ -16,6 +16,7 @@ use ForumKit\Core\ForumKitCorePlugin;
 use ForumKit\Entitlements\ForumKitEntitlementsPlugin;
 use ForumKit\Forums\Filament\Widgets\ModerationQueueStats;
 use ForumKit\Forums\ForumKitForumsPlugin;
+use ForumKit\Logs\ForumKitLogsPlugin;
 use Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse;
 use Illuminate\Cookie\Middleware\EncryptCookies;
 use Illuminate\Foundation\Http\Middleware\PreventRequestForgery;
@@ -42,6 +43,7 @@ class AdminPanelProvider extends PanelProvider
                 ForumKitCorePlugin::make(),
                 ForumKitEntitlementsPlugin::make(),
                 ForumKitForumsPlugin::make(),
+                ForumKitLogsPlugin::make(),
             ])
             ->pages([
                 Dashboard::class,
