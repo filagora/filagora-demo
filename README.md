@@ -10,6 +10,7 @@ your own app.
 | --- | --- |
 | [`zcwilt/forumkit-core`](https://github.com/zcwilt/forumkit-core) | Module and navigation registries, table prefix, user model resolution, system settings, markdown, `forumkit:doctor`, `forumkit:install`, `forumkit:adopt` |
 | [`zcwilt/forumkit-entitlements`](https://github.com/zcwilt/forumkit-entitlements) | Entitlement definitions, grants, default grants, requests, the resolver and authorization service, and the staff screens |
+| [`zcwilt/forumkit-logs`](https://github.com/zcwilt/forumkit-logs) | The email log: every outgoing message, when logging is switched on |
 | [`zcwilt/forumkit-forums`](https://github.com/zcwilt/forumkit-forums) | Forum groups, forums, threads and posts with visibility and posting rules, moderation, reports, and the staff screens and moderation queue (no public frontend) |
 
 ## Run it locally (DDEV)
@@ -35,13 +36,14 @@ grant it created.
 
 The seeded forum has a thread waiting for approval and a reported reply: open **Queues →
 Moderation queue** to approve the thread and resolve the report, or browse **Forum →
-Forums, Threads, Posts**. The dashboard shows how much is waiting.
+Forums, Threads, Posts**. The dashboard shows how much is waiting. **Logs → Email log** shows a logged message, and
+anything the demo sends from now on (logging is switched on in the seed).
 
 These passwords are public. This is a development app, never deploy it.
 
 ## How the packages are wired in
 
-1. **Install:** `composer require zcwilt/forumkit-core zcwilt/forumkit-entitlements zcwilt/forumkit-forums`,
+1. **Install:** `composer require zcwilt/forumkit-core zcwilt/forumkit-entitlements zcwilt/forumkit-forums zcwilt/forumkit-logs`,
    then `php artisan forumkit:install` (publishes config, migrates, runs the doctor) and
    `php artisan forumkit:entitlements:sync`.
 2. **Register the plugins** on the panel
@@ -52,6 +54,7 @@ These passwords are public. This is a development app, never deploy it.
        ForumKitCorePlugin::make(),
        ForumKitEntitlementsPlugin::make(),
        ForumKitForumsPlugin::make(),
+       ForumKitLogsPlugin::make(),
    ])
    ```
 
@@ -74,6 +77,7 @@ Clone the packages next to this project:
 git clone https://github.com/zcwilt/forumkit-core.git
 git clone https://github.com/zcwilt/forumkit-entitlements.git
 git clone https://github.com/zcwilt/forumkit-forums.git
+git clone https://github.com/zcwilt/forumkit-logs.git
 ```
 
 ```
@@ -81,6 +85,7 @@ forumkit/
   forumkit-core/
   forumkit-entitlements/
   forumkit-forums/
+  forumkit-logs/
   forumkit-demo/        <- this
 ```
 
