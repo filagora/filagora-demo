@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "b819d9805fdad229d2cf08cabc1b513b",
+    "content-hash": "2da6a0b57b596a7bc56c38bd00491e57",
     "packages": [
         {
             "name": "anourvalar/eloquent-serialize",
@@ -1137,6 +1137,65 @@
                 }
             ],
             "time": "2025-03-06T22:45:56+00:00"
+        },
+        {
+            "name": "filagora/filagora-cms",
+            "version": "v0.2.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/filagora/filagora-cms.git",
+                "reference": "6db95cd7cddd6be8e61a4da4075ecf0fb4e3024f"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/filagora/filagora-cms/zipball/6db95cd7cddd6be8e61a4da4075ecf0fb4e3024f",
+                "reference": "6db95cd7cddd6be8e61a4da4075ecf0fb4e3024f",
+                "shasum": ""
+            },
+            "require": {
+                "filagora/filagora-core": "^0.2",
+                "filagora/filagora-entitlements": "^0.2",
+                "filament/filament": "^5.0",
+                "php": "^8.4"
+            },
+            "require-dev": {
+                "larastan/larastan": "^3.0",
+                "laravel/pint": "^1.0",
+                "orchestra/testbench": "^11.0",
+                "pestphp/pest": "^4.0",
+                "pestphp/pest-plugin-laravel": "^4.0"
+            },
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "Filagora\\Cms\\CmsServiceProvider"
+                    ]
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Filagora\\Cms\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "description": "Pages, blocks, navigations, media and a draft, version, schedule and preview workflow for Filagora.",
+            "keywords": [
+                "cms",
+                "filagora",
+                "filament",
+                "filament-plugin",
+                "forum",
+                "laravel"
+            ],
+            "support": {
+                "issues": "https://github.com/filagora/filagora-cms/issues",
+                "source": "https://github.com/filagora/filagora-cms/tree/v0.2.0"
+            },
+            "time": "2026-10-13T20:40:18+00:00"
         },
         {
             "name": "filagora/filagora-core",

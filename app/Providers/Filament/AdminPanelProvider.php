@@ -2,6 +2,7 @@
 
 namespace App\Providers\Filament;
 
+use Filagora\Cms\FilagoraCmsPlugin;
 use Filagora\Core\FilagoraCorePlugin;
 use Filagora\Entitlements\FilagoraEntitlementsPlugin;
 use Filagora\Forums\FilagoraForumsPlugin;
@@ -41,6 +42,7 @@ class AdminPanelProvider extends PanelProvider
             ->discoverPages(in: app_path('Filament/Pages'), for: 'App\Filament\Pages')
             ->plugins([
                 FilagoraCorePlugin::make(),
+                FilagoraCmsPlugin::make(),
                 FilagoraEntitlementsPlugin::make(),
                 FilagoraForumsPlugin::make(),
                 FilagoraLogsPlugin::make(),

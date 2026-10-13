@@ -7,7 +7,7 @@
 set -euo pipefail
 cd "$(dirname "$0")/.."
 
-packages=(core entitlements forums logs)
+packages=(core entitlements forums logs cms)
 
 for name in "${packages[@]}"; do
   if [ ! -d "../filagora-${name}" ]; then
@@ -33,7 +33,7 @@ local = [
         "url": f"/var/www/filagora-{name}",
         "options": {"symlink": True, "versions": {f"filagora/filagora-{name}": line}},
     }
-    for name in ("core", "entitlements", "forums", "logs")
+    for name in ("core", "entitlements", "forums", "logs", "cms")
 ]
 rest = [repo for repo in data.get("repositories", []) if repo.get("type") != "path"]
 data["repositories"] = local + rest
@@ -48,7 +48,8 @@ ddev composer require --no-interaction \
   filagora/filagora-core:@dev \
   filagora/filagora-entitlements:@dev \
   filagora/filagora-forums:@dev \
-  filagora/filagora-logs:@dev
+  filagora/filagora-logs:@dev \
+  filagora/filagora-cms:@dev
 
 echo
 echo "Linked. vendor/filagora/ now points at your checkouts:"

@@ -10,6 +10,7 @@ your own app.
 | --- | --- |
 | [`filagora/filagora-core`](https://github.com/filagora/filagora-core) | Module and navigation registries, table prefix, user model resolution, system settings, markdown, `filagora:doctor`, `filagora:install`, `filagora:adopt` |
 | [`filagora/filagora-entitlements`](https://github.com/filagora/filagora-entitlements) | Entitlement definitions, grants, default grants, requests, the resolver and authorization service, and the staff screens |
+| [`filagora/filagora-cms`](https://github.com/filagora/filagora-cms) | Pages, menus, reusable blocks and media, with drafts, versions, scheduling and preview |
 | [`filagora/filagora-logs`](https://github.com/filagora/filagora-logs) | The email log: every outgoing message, when logging is switched on |
 | [`filagora/filagora-forums`](https://github.com/filagora/filagora-forums) | Forum groups, forums, threads and posts with visibility and posting rules, moderation, reports, and the staff screens and moderation queue (no public frontend) |
 
@@ -37,13 +38,14 @@ grant it created.
 The seeded forum has a thread waiting for approval and a reported reply: open **Queues →
 Moderation queue** to approve the thread and resolve the report, or browse **Forum →
 Forums, Threads, Posts**. The dashboard shows how much is waiting. **Logs → Email log** shows a logged message, and
-anything the demo sends from now on (logging is switched on in the seed).
+anything the demo sends from now on (logging is switched on in the seed). **Content → Pages** has a published
+"Welcome" page with a hero block and a draft "About" page: edit a block, save the draft, then publish.
 
 These passwords are public. This is a development app, never deploy it.
 
 ## How the packages are wired in
 
-1. **Install:** `composer require filagora/filagora-core filagora/filagora-entitlements filagora/filagora-forums filagora/filagora-logs`,
+1. **Install:** `composer require filagora/filagora-core filagora/filagora-entitlements filagora/filagora-forums filagora/filagora-logs filagora/filagora-cms`,
    then `php artisan filagora:install` (publishes config, migrates, runs the doctor) and
    `php artisan filagora:entitlements:sync`.
 2. **Register the plugins** on the panel
@@ -55,6 +57,7 @@ These passwords are public. This is a development app, never deploy it.
        FilagoraEntitlementsPlugin::make(),
        FilagoraForumsPlugin::make(),
        FilagoraLogsPlugin::make(),
+       FilagoraCmsPlugin::make(),
    ])
    ```
 
@@ -78,6 +81,7 @@ git clone https://github.com/filagora/filagora-core.git
 git clone https://github.com/filagora/filagora-entitlements.git
 git clone https://github.com/filagora/filagora-forums.git
 git clone https://github.com/filagora/filagora-logs.git
+git clone https://github.com/filagora/filagora-cms.git
 ```
 
 ```
@@ -86,6 +90,7 @@ filagora/
   filagora-entitlements/
   filagora-forums/
   filagora-logs/
+  filagora-cms/
   filagora-demo/        <- this
 ```
 
