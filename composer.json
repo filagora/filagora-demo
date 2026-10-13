@@ -1,18 +1,18 @@
 {
     "$schema": "https://getcomposer.org/schema.json",
-    "name": "zcwilt/forumkit-demo",
+    "name": "filagora/filagora-demo",
     "type": "project",
-    "description": "A Laravel 13 and Filament 5 app that installs the ForumKit packages: development, docs and install smoke tests.",
+    "description": "A Laravel 13 and Filament 5 app that installs the Filagora packages: development, docs and install smoke tests.",
     "license": "MIT",
     "require": {
         "php": "^8.4",
         "filament/filament": "^5.0",
         "laravel/framework": "^13.17",
         "laravel/tinker": "^3.0",
-        "zcwilt/forumkit-core": "^0.1",
-        "zcwilt/forumkit-entitlements": "^0.1",
-        "zcwilt/forumkit-forums": "^0.1",
-        "zcwilt/forumkit-logs": "^0.1"
+        "filagora/filagora-core": "^0.2",
+        "filagora/filagora-entitlements": "^0.2",
+        "filagora/filagora-forums": "^0.2",
+        "filagora/filagora-logs": "^0.2"
     },
     "require-dev": {
         "fakerphp/faker": "^1.23",

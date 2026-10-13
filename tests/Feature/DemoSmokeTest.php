@@ -4,28 +4,28 @@ use App\Filament\Resources\Users\Pages\EditUser;
 use App\Filament\Resources\Users\UserResource;
 use App\Models\User;
 use Database\Seeders\DemoSeeder;
+use Filagora\Core\Filament\Resources\Settings\SettingResource;
+use Filagora\Entitlements\Enums\EntitlementRequestStatus;
+use Filagora\Entitlements\Filament\RelationManagers\UserEntitlementRequestsRelationManager;
+use Filagora\Entitlements\Filament\RelationManagers\UserEntitlementsRelationManager;
+use Filagora\Entitlements\Filament\Resources\DefaultEntitlementGrants\DefaultEntitlementGrantResource;
+use Filagora\Entitlements\Filament\Resources\EntitlementDefinitions\EntitlementDefinitionResource;
+use Filagora\Entitlements\Filament\Resources\EntitlementRequests\EntitlementRequestResource;
+use Filagora\Entitlements\Filament\Resources\EntitlementRequests\Pages\ViewEntitlementRequest;
+use Filagora\Entitlements\Filament\Resources\UserEntitlementGrants\UserEntitlementGrantResource;
+use Filagora\Entitlements\Models\EntitlementRequest;
+use Filagora\Entitlements\Services\EntitlementResolver;
+use Filagora\Forums\Filament\Pages\ModerationQueue;
+use Filagora\Forums\Filament\Resources\ForumGroups\ForumGroupResource;
+use Filagora\Forums\Filament\Resources\Forums\ForumResource;
+use Filagora\Forums\Filament\Resources\PostReports\PostReportResource;
+use Filagora\Forums\Filament\Resources\Posts\PostResource;
+use Filagora\Forums\Filament\Resources\Threads\ThreadResource;
+use Filagora\Forums\Models\PostReport;
+use Filagora\Forums\Models\Thread;
+use Filagora\Logs\Filament\Resources\EmailLogs\EmailLogResource;
+use Filagora\Logs\Models\EmailLog;
 use Filament\Facades\Filament;
-use ForumKit\Core\Filament\Resources\Settings\SettingResource;
-use ForumKit\Entitlements\Enums\EntitlementRequestStatus;
-use ForumKit\Entitlements\Filament\RelationManagers\UserEntitlementRequestsRelationManager;
-use ForumKit\Entitlements\Filament\RelationManagers\UserEntitlementsRelationManager;
-use ForumKit\Entitlements\Filament\Resources\DefaultEntitlementGrants\DefaultEntitlementGrantResource;
-use ForumKit\Entitlements\Filament\Resources\EntitlementDefinitions\EntitlementDefinitionResource;
-use ForumKit\Entitlements\Filament\Resources\EntitlementRequests\EntitlementRequestResource;
-use ForumKit\Entitlements\Filament\Resources\EntitlementRequests\Pages\ViewEntitlementRequest;
-use ForumKit\Entitlements\Filament\Resources\UserEntitlementGrants\UserEntitlementGrantResource;
-use ForumKit\Entitlements\Models\EntitlementRequest;
-use ForumKit\Entitlements\Services\EntitlementResolver;
-use ForumKit\Forums\Filament\Pages\ModerationQueue;
-use ForumKit\Forums\Filament\Resources\ForumGroups\ForumGroupResource;
-use ForumKit\Forums\Filament\Resources\Forums\ForumResource;
-use ForumKit\Forums\Filament\Resources\PostReports\PostReportResource;
-use ForumKit\Forums\Filament\Resources\Posts\PostResource;
-use ForumKit\Forums\Filament\Resources\Threads\ThreadResource;
-use ForumKit\Forums\Models\PostReport;
-use ForumKit\Forums\Models\Thread;
-use ForumKit\Logs\Filament\Resources\EmailLogs\EmailLogResource;
-use ForumKit\Logs\Models\EmailLog;
 use Livewire\Livewire;
 
 use function Pest\Laravel\actingAs;
@@ -40,8 +40,8 @@ beforeEach(function () {
     $this->member = User::where('email', 'member@example.test')->sole();
 });
 
-it('passes the ForumKit doctor on a migrated install', function () {
-    artisan('forumkit:doctor')->expectsOutputToContain('All checks passed.')->assertExitCode(0);
+it('passes the Filagora doctor on a migrated install', function () {
+    artisan('filagora:doctor')->expectsOutputToContain('All checks passed.')->assertExitCode(0);
 });
 
 it('sends guests to the sign-in page', function () {
@@ -53,7 +53,7 @@ it('shows the sign-in page', function () {
     get('/admin/login')->assertOk();
 });
 
-it('opens the dashboard and every ForumKit screen for staff', function () {
+it('opens the dashboard and every Filagora screen for staff', function () {
     actingAs($this->admin);
 
     foreach ([
@@ -99,7 +99,7 @@ it('keeps staff screens closed to a member without entitlements', function () {
 });
 
 it('lists the staff entitlements as one wildcard grant', function () {
-    expect(app(EntitlementResolver::class)->entitlementsFor($this->admin))->toBe(['forumkit.*'])
+    expect(app(EntitlementResolver::class)->entitlementsFor($this->admin))->toBe(['filagora.*'])
         ->and(app(EntitlementResolver::class)->entitlementsFor($this->member))->toBe([]);
 });
 
@@ -117,7 +117,7 @@ it('shows both entitlement relation managers on the user screen', function () {
 
     Livewire::test(UserEntitlementsRelationManager::class, $managerArguments)
         ->assertSuccessful()
-        ->assertSee('forumkit.*');
+        ->assertSee('filagora.*');
 
     Livewire::test(UserEntitlementRequestsRelationManager::class, ['ownerRecord' => $this->member, 'pageClass' => EditUser::class])
         ->assertSuccessful()

@@ -2,6 +2,11 @@
 
 namespace App\Providers\Filament;
 
+use Filagora\Core\FilagoraCorePlugin;
+use Filagora\Entitlements\FilagoraEntitlementsPlugin;
+use Filagora\Forums\FilagoraForumsPlugin;
+use Filagora\Forums\Filament\Widgets\ModerationQueueStats;
+use Filagora\Logs\FilagoraLogsPlugin;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\AuthenticateSession;
 use Filament\Http\Middleware\DisableBladeIconComponents;
@@ -12,11 +17,6 @@ use Filament\PanelProvider;
 use Filament\Support\Colors\Color;
 use Filament\Widgets\AccountWidget;
 use Filament\Widgets\FilamentInfoWidget;
-use ForumKit\Core\ForumKitCorePlugin;
-use ForumKit\Entitlements\ForumKitEntitlementsPlugin;
-use ForumKit\Forums\Filament\Widgets\ModerationQueueStats;
-use ForumKit\Forums\ForumKitForumsPlugin;
-use ForumKit\Logs\ForumKitLogsPlugin;
 use Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse;
 use Illuminate\Cookie\Middleware\EncryptCookies;
 use Illuminate\Foundation\Http\Middleware\PreventRequestForgery;
@@ -40,10 +40,10 @@ class AdminPanelProvider extends PanelProvider
             ->discoverResources(in: app_path('Filament/Resources'), for: 'App\Filament\Resources')
             ->discoverPages(in: app_path('Filament/Pages'), for: 'App\Filament\Pages')
             ->plugins([
-                ForumKitCorePlugin::make(),
-                ForumKitEntitlementsPlugin::make(),
-                ForumKitForumsPlugin::make(),
-                ForumKitLogsPlugin::make(),
+                FilagoraCorePlugin::make(),
+                FilagoraEntitlementsPlugin::make(),
+                FilagoraForumsPlugin::make(),
+                FilagoraLogsPlugin::make(),
             ])
             ->pages([
                 Dashboard::class,

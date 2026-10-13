@@ -3,21 +3,21 @@
 namespace Database\Seeders;
 
 use App\Models\User;
-use ForumKit\Core\Models\Setting;
-use ForumKit\Entitlements\Enums\EntitlementRequestStatus;
-use ForumKit\Entitlements\Models\EntitlementDefinition;
-use ForumKit\Entitlements\Models\EntitlementRequest;
-use ForumKit\Entitlements\Models\UserEntitlementGrant;
-use ForumKit\Forums\Models\Forum;
-use ForumKit\Forums\Models\ForumGroup;
-use ForumKit\Forums\Models\Post;
-use ForumKit\Forums\Models\PostReport;
-use ForumKit\Forums\Models\Thread;
-use ForumKit\Logs\Models\EmailLog;
+use Filagora\Core\Models\Setting;
+use Filagora\Entitlements\Enums\EntitlementRequestStatus;
+use Filagora\Entitlements\Models\EntitlementDefinition;
+use Filagora\Entitlements\Models\EntitlementRequest;
+use Filagora\Entitlements\Models\UserEntitlementGrant;
+use Filagora\Forums\Models\Forum;
+use Filagora\Forums\Models\ForumGroup;
+use Filagora\Forums\Models\Post;
+use Filagora\Forums\Models\PostReport;
+use Filagora\Forums\Models\Thread;
+use Filagora\Logs\Models\EmailLog;
 use Illuminate\Database\Seeder;
 
 /**
- * A staff user who holds every `forumkit.*` entitlement through one wildcard grant, a
+ * A staff user who holds every `filagora.*` entitlement through one wildcard grant, a
  * plain member, and a pending request from that member, so every screen has something
  * to show. Local use only: the passwords are public.
  */
@@ -32,7 +32,7 @@ class DemoSeeder extends Seeder
         $admin->forceFill(['email_verified_at' => now()])->save();
 
         UserEntitlementGrant::query()->firstOrCreate(
-            ['user_id' => $admin->id, 'entitlement_key' => 'forumkit.*', 'grant_type' => 'system'],
+            ['user_id' => $admin->id, 'entitlement_key' => 'filagora.*', 'grant_type' => 'system'],
             ['reason' => 'Demo staff'],
         );
 
