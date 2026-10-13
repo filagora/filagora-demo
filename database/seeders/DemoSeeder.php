@@ -3,6 +3,7 @@
 namespace Database\Seeders;
 
 use App\Models\User;
+use Filagora\Cms\Models\CmsPage;
 use Filagora\Core\Models\Setting;
 use Filagora\Entitlements\Enums\EntitlementRequestStatus;
 use Filagora\Entitlements\Models\EntitlementDefinition;
@@ -54,6 +55,7 @@ class DemoSeeder extends Seeder
 
         $this->seedForum($admin, $member);
         $this->seedEmailLog($member);
+        $this->seedPages();
     }
 
     /**
@@ -105,6 +107,27 @@ class DemoSeeder extends Seeder
                 'subject' => 'Welcome to the demo',
                 'sent_at' => now(),
             ],
+        );
+    }
+
+    /**
+     * A published page with a hero block, and a draft page, so the Content screens have rows.
+     */
+    private function seedPages(): void
+    {
+        $welcome = CmsPage::query()->firstOrCreate(
+            ['slug' => 'welcome'],
+            ['title' => 'Welcome', 'status' => 'published', 'published_at' => now()],
+        );
+
+        $welcome->blocks()->firstOrCreate(
+            ['type' => 'hero', 'name' => 'Welcome hero'],
+            ['is_published' => true, 'sort_order' => 1, 'data' => ['title' => 'Welcome to the demo', 'body' => 'Edit me under Content → Pages.', 'cta_label' => 'Browse the forum', 'cta_url' => '/forums']],
+        );
+
+        CmsPage::query()->firstOrCreate(
+            ['slug' => 'about'],
+            ['title' => 'About', 'status' => 'draft'],
         );
     }
 }

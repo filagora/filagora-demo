@@ -4,6 +4,11 @@ use App\Filament\Resources\Users\Pages\EditUser;
 use App\Filament\Resources\Users\UserResource;
 use App\Models\User;
 use Database\Seeders\DemoSeeder;
+use Filagora\Cms\Filament\Resources\CmsBlocks\CmsBlockResource;
+use Filagora\Cms\Filament\Resources\CmsMediaAssets\CmsMediaAssetResource;
+use Filagora\Cms\Filament\Resources\CmsNavigations\CmsNavigationResource;
+use Filagora\Cms\Filament\Resources\CmsPages\CmsPageResource;
+use Filagora\Cms\Models\CmsPage;
 use Filagora\Core\Filament\Resources\Settings\SettingResource;
 use Filagora\Entitlements\Enums\EntitlementRequestStatus;
 use Filagora\Entitlements\Filament\RelationManagers\UserEntitlementRequestsRelationManager;
@@ -71,6 +76,10 @@ it('opens the dashboard and every Filagora screen for staff', function () {
         PostReportResource::getUrl('index'),
         ModerationQueue::getUrl(),
         EmailLogResource::getUrl('index'),
+        CmsPageResource::getUrl('index'),
+        CmsNavigationResource::getUrl('index'),
+        CmsBlockResource::getUrl('index'),
+        CmsMediaAssetResource::getUrl('index'),
     ] as $url) {
         get($url)->assertOk();
     }
@@ -93,6 +102,10 @@ it('keeps staff screens closed to a member without entitlements', function () {
         PostReportResource::getUrl('index'),
         ModerationQueue::getUrl(),
         EmailLogResource::getUrl('index'),
+        CmsPageResource::getUrl('index'),
+        CmsNavigationResource::getUrl('index'),
+        CmsBlockResource::getUrl('index'),
+        CmsMediaAssetResource::getUrl('index'),
     ] as $url) {
         get($url)->assertForbidden();
     }
@@ -163,5 +176,6 @@ it('seeds idempotently', function () {
         ->and(EntitlementRequest::count())->toBe(1)
         ->and(Thread::count())->toBe(2)
         ->and(PostReport::count())->toBe(1)
-        ->and(EmailLog::count())->toBe(1);
+        ->and(EmailLog::count())->toBe(1)
+        ->and(CmsPage::count())->toBe(2);
 });
