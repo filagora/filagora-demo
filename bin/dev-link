@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Use the local ForumKit checkouts (../forumkit-*) instead of the GitHub versions, so a
+# Use the local Filagora checkouts (../filagora-*) instead of the GitHub versions, so a
 # change in a package shows up here at once. Run inside the project; needs DDEV.
 #
 # This edits composer.json and composer.lock. Do not commit those changes: run
@@ -10,8 +10,8 @@ cd "$(dirname "$0")/.."
 packages=(core entitlements forums logs)
 
 for name in "${packages[@]}"; do
-  if [ ! -d "../forumkit-${name}" ]; then
-    echo "Missing ../forumkit-${name}: clone it next to this project first." >&2
+  if [ ! -d "../filagora-${name}" ]; then
+    echo "Missing ../filagora-${name}: clone it next to this project first." >&2
     exit 1
   fi
 done
@@ -24,14 +24,14 @@ with open("composer.json") as handle:
     data = json.load(handle)
 
 # A symlinked checkout reports itself as dev-master, which would not satisfy the packages'
-# own ^0.1 constraints on each other, so say which release line the checkouts stand for.
+# own ^0.2 constraints on each other, so say which release line the checkouts stand for.
 # Bump this when the packages move to a new 0.x minor.
-line = "0.1.x-dev"
+line = "0.2.x-dev"
 local = [
     {
         "type": "path",
-        "url": f"/var/www/forumkit-{name}",
-        "options": {"symlink": True, "versions": {f"zcwilt/forumkit-{name}": line}},
+        "url": f"/var/www/filagora-{name}",
+        "options": {"symlink": True, "versions": {f"filagora/filagora-{name}": line}},
     }
     for name in ("core", "entitlements", "forums", "logs")
 ]
@@ -45,11 +45,11 @@ PY
 
 ddev restart >/dev/null
 ddev composer require --no-interaction \
-  zcwilt/forumkit-core:@dev \
-  zcwilt/forumkit-entitlements:@dev \
-  zcwilt/forumkit-forums:@dev \
-  zcwilt/forumkit-logs:@dev
+  filagora/filagora-core:@dev \
+  filagora/filagora-entitlements:@dev \
+  filagora/filagora-forums:@dev \
+  filagora/filagora-logs:@dev
 
 echo
-echo "Linked. vendor/zcwilt/ now points at your checkouts:"
-ls -l vendor/zcwilt
+echo "Linked. vendor/filagora/ now points at your checkouts:"
+ls -l vendor/filagora

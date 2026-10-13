@@ -3,9 +3,9 @@
 namespace App\Models;
 
 use Database\Factories\UserFactory;
+use Filagora\Entitlements\Concerns\HasEntitlements;
 use Filament\Models\Contracts\FilamentUser;
 use Filament\Panel;
-use ForumKit\Entitlements\Concerns\HasEntitlements;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Hidden;

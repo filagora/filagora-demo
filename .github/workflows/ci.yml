@@ -52,10 +52,10 @@ jobs:
       - name: Pint (check only)
         run: vendor/bin/pint --test
 
-      - name: Migrate and run the ForumKit doctor
+      - name: Migrate and run the Filagora doctor
         run: |
           php artisan migrate --force --no-interaction
-          php artisan forumkit:doctor
+          php artisan filagora:doctor
 
       - name: Seed the demo data
         run: php artisan db:seed --force --no-interaction
@@ -64,5 +64,5 @@ jobs:
         run: vendor/bin/pest --ci
 
   leak-scan:
-    uses: zcwilt/forumkit-shared/.github/workflows/leak-scan.yml@master
+    uses: filagora/filagora-shared/.github/workflows/leak-scan.yml@master
     secrets: inherit

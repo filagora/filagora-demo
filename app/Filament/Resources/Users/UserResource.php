@@ -6,23 +6,23 @@ use App\Filament\Resources\Users\Pages\EditUser;
 use App\Filament\Resources\Users\Pages\ListUsers;
 use App\Models\User;
 use BackedEnum;
+use Filagora\Core\Navigation\NavigationGroupRegistry;
+use Filagora\Entitlements\Filament\RelationManagers\UserEntitlementRequestsRelationManager;
+use Filagora\Entitlements\Filament\RelationManagers\UserEntitlementsRelationManager;
+use Filagora\Entitlements\Support\Abilities;
 use Filament\Forms\Components\TextInput;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
-use ForumKit\Core\Navigation\NavigationGroupRegistry;
-use ForumKit\Entitlements\Filament\RelationManagers\UserEntitlementRequestsRelationManager;
-use ForumKit\Entitlements\Filament\RelationManagers\UserEntitlementsRelationManager;
-use ForumKit\Entitlements\Support\Abilities;
 use Illuminate\Auth\Access\Response;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Gate;
 use UnitEnum;
 
 /**
- * The demo's own user screen. ForumKit ships no Users resource; a host builds one and
+ * The demo's own user screen. Filagora ships no Users resource; a host builds one and
  * attaches the entitlement relation managers to it, as here.
  */
 class UserResource extends Resource
