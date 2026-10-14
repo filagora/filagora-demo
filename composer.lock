@@ -1140,30 +1140,33 @@
         },
         {
             "name": "filagora/filagora-cms",
-            "version": "v0.2.0",
+            "version": "v0.2.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/filagora/filagora-cms.git",
-                "reference": "6db95cd7cddd6be8e61a4da4075ecf0fb4e3024f"
+                "reference": "d0c66acfcae06375f05d9d059e49609ba4d059be"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/filagora/filagora-cms/zipball/6db95cd7cddd6be8e61a4da4075ecf0fb4e3024f",
-                "reference": "6db95cd7cddd6be8e61a4da4075ecf0fb4e3024f",
+                "url": "https://api.github.com/repos/filagora/filagora-cms/zipball/d0c66acfcae06375f05d9d059e49609ba4d059be",
+                "reference": "d0c66acfcae06375f05d9d059e49609ba4d059be",
                 "shasum": ""
             },
             "require": {
-                "filagora/filagora-core": "^0.2",
-                "filagora/filagora-entitlements": "^0.2",
+                "filagora/filagora-core": "^0.2.1",
                 "filament/filament": "^5.0",
                 "php": "^8.4"
             },
             "require-dev": {
+                "filagora/filagora-entitlements": "^0.2.1",
                 "larastan/larastan": "^3.0",
                 "laravel/pint": "^1.0",
                 "orchestra/testbench": "^11.0",
                 "pestphp/pest": "^4.0",
                 "pestphp/pest-plugin-laravel": "^4.0"
+            },
+            "suggest": {
+                "filagora/filagora-entitlements": "Answers the access checks from entitlement grants and lets the menu editor pick entitlement keys. Without it, bind Filagora\\Core\\Contracts\\AccessChecker."
             },
             "type": "library",
             "extra": {
@@ -1193,22 +1196,22 @@
             ],
             "support": {
                 "issues": "https://github.com/filagora/filagora-cms/issues",
-                "source": "https://github.com/filagora/filagora-cms/tree/v0.2.0"
+                "source": "https://github.com/filagora/filagora-cms/tree/v0.2.2"
             },
-            "time": "2026-10-13T20:40:18+00:00"
+            "time": "2026-10-14T20:04:31+00:00"
         },
         {
             "name": "filagora/filagora-core",
-            "version": "v0.2.0",
+            "version": "v0.2.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/filagora/filagora-core.git",
-                "reference": "9b54bd0dc54aa4261705e756807de42ff701159b"
+                "reference": "512e7d98dbad56a44e65727580543a0740649163"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/filagora/filagora-core/zipball/9b54bd0dc54aa4261705e756807de42ff701159b",
-                "reference": "9b54bd0dc54aa4261705e756807de42ff701159b",
+                "url": "https://api.github.com/repos/filagora/filagora-core/zipball/512e7d98dbad56a44e65727580543a0740649163",
+                "reference": "512e7d98dbad56a44e65727580543a0740649163",
                 "shasum": ""
             },
             "require": {
@@ -1249,26 +1252,26 @@
             ],
             "support": {
                 "issues": "https://github.com/filagora/filagora-core/issues",
-                "source": "https://github.com/filagora/filagora-core/tree/v0.2.0"
+                "source": "https://github.com/filagora/filagora-core/tree/v0.2.1"
             },
-            "time": "2026-10-13T17:26:09+00:00"
+            "time": "2026-10-14T17:45:22+00:00"
         },
         {
             "name": "filagora/filagora-entitlements",
-            "version": "v0.2.0",
+            "version": "v0.2.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/filagora/filagora-entitlements.git",
-                "reference": "12553da19548d385a366a43bf93823b7ae4b59b4"
+                "reference": "426ac2e8f2eeeb4d71a34321649b206386153861"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/filagora/filagora-entitlements/zipball/12553da19548d385a366a43bf93823b7ae4b59b4",
-                "reference": "12553da19548d385a366a43bf93823b7ae4b59b4",
+                "url": "https://api.github.com/repos/filagora/filagora-entitlements/zipball/426ac2e8f2eeeb4d71a34321649b206386153861",
+                "reference": "426ac2e8f2eeeb4d71a34321649b206386153861",
                 "shasum": ""
             },
             "require": {
-                "filagora/filagora-core": "^0.2",
+                "filagora/filagora-core": "^0.2.1",
                 "filament/filament": "^5.0",
                 "php": "^8.4"
             },
@@ -1305,36 +1308,39 @@
             ],
             "support": {
                 "issues": "https://github.com/filagora/filagora-entitlements/issues",
-                "source": "https://github.com/filagora/filagora-entitlements/tree/v0.2.0"
+                "source": "https://github.com/filagora/filagora-entitlements/tree/v0.2.1"
             },
-            "time": "2026-10-13T17:38:36+00:00"
+            "time": "2026-10-14T17:59:54+00:00"
         },
         {
             "name": "filagora/filagora-forums",
-            "version": "v0.3.0",
+            "version": "v0.3.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/filagora/filagora-forums.git",
-                "reference": "cfb7f7d323ab9a450162c9abc6280d40f2eb7802"
+                "reference": "ffc30266254602b9ff9a9db89f2b714e58a12c0f"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/filagora/filagora-forums/zipball/cfb7f7d323ab9a450162c9abc6280d40f2eb7802",
-                "reference": "cfb7f7d323ab9a450162c9abc6280d40f2eb7802",
+                "url": "https://api.github.com/repos/filagora/filagora-forums/zipball/ffc30266254602b9ff9a9db89f2b714e58a12c0f",
+                "reference": "ffc30266254602b9ff9a9db89f2b714e58a12c0f",
                 "shasum": ""
             },
             "require": {
-                "filagora/filagora-core": "^0.2",
-                "filagora/filagora-entitlements": "^0.2",
+                "filagora/filagora-core": "^0.2.1",
                 "filament/filament": "^5.0",
                 "php": "^8.4"
             },
             "require-dev": {
+                "filagora/filagora-entitlements": "^0.2.1",
                 "larastan/larastan": "^3.0",
                 "laravel/pint": "^1.0",
                 "orchestra/testbench": "^11.0",
                 "pestphp/pest": "^4.0",
                 "pestphp/pest-plugin-laravel": "^4.0"
+            },
+            "suggest": {
+                "filagora/filagora-entitlements": "Answers the access checks from entitlement grants and lets the forum screens pick entitlement keys. Without it, bind Filagora\\Core\\Contracts\\AccessChecker."
             },
             "type": "library",
             "extra": {
@@ -1362,36 +1368,39 @@
             ],
             "support": {
                 "issues": "https://github.com/filagora/filagora-forums/issues",
-                "source": "https://github.com/filagora/filagora-forums/tree/v0.3.0"
+                "source": "https://github.com/filagora/filagora-forums/tree/v0.3.1"
             },
-            "time": "2026-10-14T15:28:04+00:00"
+            "time": "2026-10-14T20:04:23+00:00"
         },
         {
             "name": "filagora/filagora-logs",
-            "version": "v0.2.0",
+            "version": "v0.2.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/filagora/filagora-logs.git",
-                "reference": "694484bdc977d88758d5fa5e1445430894da3e5a"
+                "reference": "258fa3628876eeb04f20acf10293fc8a6c0e8553"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/filagora/filagora-logs/zipball/694484bdc977d88758d5fa5e1445430894da3e5a",
-                "reference": "694484bdc977d88758d5fa5e1445430894da3e5a",
+                "url": "https://api.github.com/repos/filagora/filagora-logs/zipball/258fa3628876eeb04f20acf10293fc8a6c0e8553",
+                "reference": "258fa3628876eeb04f20acf10293fc8a6c0e8553",
                 "shasum": ""
             },
             "require": {
-                "filagora/filagora-core": "^0.2",
-                "filagora/filagora-entitlements": "^0.2",
+                "filagora/filagora-core": "^0.2.1",
                 "filament/filament": "^5.0",
                 "php": "^8.4"
             },
             "require-dev": {
+                "filagora/filagora-entitlements": "^0.2.1",
                 "larastan/larastan": "^3.0",
                 "laravel/pint": "^1.0",
                 "orchestra/testbench": "^11.0",
                 "pestphp/pest": "^4.0",
                 "pestphp/pest-plugin-laravel": "^4.0"
+            },
+            "suggest": {
+                "filagora/filagora-entitlements": "Answers the access check from entitlement grants. Without it, bind Filagora\\Core\\Contracts\\AccessChecker."
             },
             "type": "library",
             "extra": {
@@ -1420,9 +1429,9 @@
             ],
             "support": {
                 "issues": "https://github.com/filagora/filagora-logs/issues",
-                "source": "https://github.com/filagora/filagora-logs/tree/v0.2.0"
+                "source": "https://github.com/filagora/filagora-logs/tree/v0.2.1"
             },
-            "time": "2026-10-13T18:08:33+00:00"
+            "time": "2026-10-14T20:04:39+00:00"
         },
         {
             "name": "filament/actions",
