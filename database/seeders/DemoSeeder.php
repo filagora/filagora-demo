@@ -13,6 +13,7 @@ use Filagora\Forums\Models\Forum;
 use Filagora\Forums\Models\ForumGroup;
 use Filagora\Forums\Models\Post;
 use Filagora\Forums\Models\PostReport;
+use Filagora\Forums\Models\SiteNotification;
 use Filagora\Forums\Models\Thread;
 use Filagora\Logs\Models\EmailLog;
 use Illuminate\Database\Seeder;
@@ -56,6 +57,7 @@ class DemoSeeder extends Seeder
         $this->seedForum($admin, $member);
         $this->seedEmailLog($member);
         $this->seedPages();
+        $this->seedAnnouncement();
     }
 
     /**
@@ -128,6 +130,22 @@ class DemoSeeder extends Seeder
         CmsPage::query()->firstOrCreate(
             ['slug' => 'about'],
             ['title' => 'About', 'status' => 'draft'],
+        );
+    }
+
+    /**
+     * A published banner for signed-in users, so the Announcements screen has a row.
+     */
+    private function seedAnnouncement(): void
+    {
+        SiteNotification::query()->firstOrCreate(
+            ['title' => 'Welcome to the demo'],
+            [
+                'body' => 'This banner is an **announcement**. Edit it under Forum → Announcements.',
+                'status' => 'published',
+                'audience' => 'authenticated_only',
+                'severity' => 'info',
+            ],
         );
     }
 }
