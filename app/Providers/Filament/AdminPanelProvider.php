@@ -3,6 +3,8 @@
 namespace App\Providers\Filament;
 
 use Filagora\Cms\FilagoraCmsPlugin;
+use Filagora\Compliance\FilagoraCompliancePlugin;
+use Filagora\Compliance\Filament\Widgets\PrivacyKpiOverview;
 use Filagora\Core\FilagoraCorePlugin;
 use Filagora\Entitlements\FilagoraEntitlementsPlugin;
 use Filagora\Forums\FilagoraForumsPlugin;
@@ -46,6 +48,7 @@ class AdminPanelProvider extends PanelProvider
                 FilagoraEntitlementsPlugin::make(),
                 FilagoraForumsPlugin::make(),
                 FilagoraLogsPlugin::make(),
+                FilagoraCompliancePlugin::make(),
             ])
             ->pages([
                 Dashboard::class,
@@ -55,6 +58,7 @@ class AdminPanelProvider extends PanelProvider
                 AccountWidget::class,
                 FilamentInfoWidget::class,
                 ModerationQueueStats::class,
+                PrivacyKpiOverview::class,
             ])
             ->middleware([
                 EncryptCookies::class,

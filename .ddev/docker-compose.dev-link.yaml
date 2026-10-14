@@ -8,3 +8,4 @@ services:
       - ../../filagora-forums:/var/www/filagora-forums
       - ../../filagora-logs:/var/www/filagora-logs
       - ../../filagora-cms:/var/www/filagora-cms
+      - ../../filagora-compliance:/var/www/filagora-compliance

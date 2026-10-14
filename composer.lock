@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "97b7da6ae90f0b6aeb7603e6834c8e58",
+    "content-hash": "3721d82fcec7ee3c23a994ce4bdcbf25",
     "packages": [
         {
             "name": "anourvalar/eloquent-serialize",
@@ -1201,6 +1201,71 @@
             "time": "2026-10-14T20:04:31+00:00"
         },
         {
+            "name": "filagora/filagora-compliance",
+            "version": "v0.1.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/filagora/filagora-compliance.git",
+                "reference": "5c30934b0d95b819a3f544bafa26cf596e7ebcba"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/filagora/filagora-compliance/zipball/5c30934b0d95b819a3f544bafa26cf596e7ebcba",
+                "reference": "5c30934b0d95b819a3f544bafa26cf596e7ebcba",
+                "shasum": ""
+            },
+            "require": {
+                "filagora/filagora-core": "^0.2.1",
+                "filament/filament": "^5.0",
+                "php": "^8.4"
+            },
+            "require-dev": {
+                "filagora/filagora-cms": "^0.2.1",
+                "filagora/filagora-entitlements": "^0.2.1",
+                "larastan/larastan": "^3.0",
+                "laravel/pint": "^1.0",
+                "orchestra/testbench": "^11.0",
+                "pestphp/pest": "^4.0",
+                "pestphp/pest-plugin-laravel": "^4.0"
+            },
+            "suggest": {
+                "filagora/filagora-cms": "Creates a new cookie policy version when the cookie policy page is published.",
+                "filagora/filagora-entitlements": "Answers the access checks from entitlement grants. Without it, bind Filagora\\Core\\Contracts\\AccessChecker."
+            },
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "Filagora\\Compliance\\ComplianceServiceProvider"
+                    ]
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Filagora\\Compliance\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "description": "Cookie consent, policy versions and privacy requests (export and erasure) for Filagora.",
+            "keywords": [
+                "cookie-consent",
+                "filagora",
+                "filament",
+                "filament-plugin",
+                "gdpr",
+                "laravel",
+                "privacy"
+            ],
+            "support": {
+                "issues": "https://github.com/filagora/filagora-compliance/issues",
+                "source": "https://github.com/filagora/filagora-compliance/tree/v0.1.0"
+            },
+            "time": "2026-10-14T22:09:11+00:00"
+        },
+        {
             "name": "filagora/filagora-core",
             "version": "v0.2.1",
             "source": {
@@ -1258,16 +1323,16 @@
         },
         {
             "name": "filagora/filagora-entitlements",
-            "version": "v0.2.1",
+            "version": "v0.2.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/filagora/filagora-entitlements.git",
-                "reference": "426ac2e8f2eeeb4d71a34321649b206386153861"
+                "reference": "cd30bfd64c3a1ba05c34c4070bea1ae73fb9a924"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/filagora/filagora-entitlements/zipball/426ac2e8f2eeeb4d71a34321649b206386153861",
-                "reference": "426ac2e8f2eeeb4d71a34321649b206386153861",
+                "url": "https://api.github.com/repos/filagora/filagora-entitlements/zipball/cd30bfd64c3a1ba05c34c4070bea1ae73fb9a924",
+                "reference": "cd30bfd64c3a1ba05c34c4070bea1ae73fb9a924",
                 "shasum": ""
             },
             "require": {
@@ -1308,22 +1373,22 @@
             ],
             "support": {
                 "issues": "https://github.com/filagora/filagora-entitlements/issues",
-                "source": "https://github.com/filagora/filagora-entitlements/tree/v0.2.1"
+                "source": "https://github.com/filagora/filagora-entitlements/tree/v0.2.2"
             },
-            "time": "2026-10-14T17:59:54+00:00"
+            "time": "2026-10-14T21:35:42+00:00"
         },
         {
             "name": "filagora/filagora-forums",
-            "version": "v0.3.1",
+            "version": "v0.3.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/filagora/filagora-forums.git",
-                "reference": "ffc30266254602b9ff9a9db89f2b714e58a12c0f"
+                "reference": "5035d551917d1e4dc5a99275a6f435d87032940c"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/filagora/filagora-forums/zipball/ffc30266254602b9ff9a9db89f2b714e58a12c0f",
-                "reference": "ffc30266254602b9ff9a9db89f2b714e58a12c0f",
+                "url": "https://api.github.com/repos/filagora/filagora-forums/zipball/5035d551917d1e4dc5a99275a6f435d87032940c",
+                "reference": "5035d551917d1e4dc5a99275a6f435d87032940c",
                 "shasum": ""
             },
             "require": {
@@ -1368,22 +1433,22 @@
             ],
             "support": {
                 "issues": "https://github.com/filagora/filagora-forums/issues",
-                "source": "https://github.com/filagora/filagora-forums/tree/v0.3.1"
+                "source": "https://github.com/filagora/filagora-forums/tree/v0.3.2"
             },
-            "time": "2026-10-14T20:04:23+00:00"
+            "time": "2026-10-14T21:30:14+00:00"
         },
         {
             "name": "filagora/filagora-logs",
-            "version": "v0.2.1",
+            "version": "v0.2.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/filagora/filagora-logs.git",
-                "reference": "258fa3628876eeb04f20acf10293fc8a6c0e8553"
+                "reference": "c2aeb89940da732bf9b9105770b81fcae98172b1"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/filagora/filagora-logs/zipball/258fa3628876eeb04f20acf10293fc8a6c0e8553",
-                "reference": "258fa3628876eeb04f20acf10293fc8a6c0e8553",
+                "url": "https://api.github.com/repos/filagora/filagora-logs/zipball/c2aeb89940da732bf9b9105770b81fcae98172b1",
+                "reference": "c2aeb89940da732bf9b9105770b81fcae98172b1",
                 "shasum": ""
             },
             "require": {
@@ -1429,9 +1494,9 @@
             ],
             "support": {
                 "issues": "https://github.com/filagora/filagora-logs/issues",
-                "source": "https://github.com/filagora/filagora-logs/tree/v0.2.1"
+                "source": "https://github.com/filagora/filagora-logs/tree/v0.2.2"
             },
-            "time": "2026-10-14T20:04:39+00:00"
+            "time": "2026-10-14T21:35:03+00:00"
         },
         {
             "name": "filament/actions",
