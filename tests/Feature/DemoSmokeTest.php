@@ -9,6 +9,15 @@ use Filagora\Cms\Filament\Resources\CmsMediaAssets\CmsMediaAssetResource;
 use Filagora\Cms\Filament\Resources\CmsNavigations\CmsNavigationResource;
 use Filagora\Cms\Filament\Resources\CmsPages\CmsPageResource;
 use Filagora\Cms\Models\CmsPage;
+use Filagora\Compliance\Filament\Resources\CookieConsentGroups\CookieConsentGroupResource;
+use Filagora\Compliance\Filament\Resources\CookiePolicyVersions\CookiePolicyVersionResource;
+use Filagora\Compliance\Filament\Resources\PrivacyOperationAudits\PrivacyOperationAuditResource;
+use Filagora\Compliance\Filament\Resources\PrivacyPolicyVersions\PrivacyPolicyVersionResource;
+use Filagora\Compliance\Filament\Resources\PrivacyRequests\Pages\ViewPrivacyRequest;
+use Filagora\Compliance\Filament\Resources\PrivacyRequests\PrivacyRequestResource;
+use Filagora\Compliance\Models\PrivacyRequest;
+use Filagora\Compliance\Services\CookieConsent;
+use Filagora\Compliance\Services\PolicyAcceptance;
 use Filagora\Core\Filament\Resources\Settings\SettingResource;
 use Filagora\Entitlements\Enums\EntitlementRequestStatus;
 use Filagora\Entitlements\Filament\RelationManagers\UserEntitlementRequestsRelationManager;
@@ -35,6 +44,7 @@ use Filagora\Forums\Services\AnnouncementDismissals;
 use Filagora\Logs\Filament\Resources\EmailLogs\EmailLogResource;
 use Filagora\Logs\Models\EmailLog;
 use Filament\Facades\Filament;
+use Illuminate\Support\Facades\Storage;
 use Livewire\Livewire;
 
 use function Pest\Laravel\actingAs;
@@ -85,6 +95,11 @@ it('opens the dashboard and every Filagora screen for staff', function () {
         CmsBlockResource::getUrl('index'),
         CmsMediaAssetResource::getUrl('index'),
         SiteNotificationResource::getUrl('index'),
+        PrivacyRequestResource::getUrl('index'),
+        CookieConsentGroupResource::getUrl('index'),
+        CookiePolicyVersionResource::getUrl('index'),
+        PrivacyPolicyVersionResource::getUrl('index'),
+        PrivacyOperationAuditResource::getUrl('index'),
     ] as $url) {
         get($url)->assertOk();
     }
@@ -112,6 +127,11 @@ it('keeps staff screens closed to a member without entitlements', function () {
         CmsBlockResource::getUrl('index'),
         CmsMediaAssetResource::getUrl('index'),
         SiteNotificationResource::getUrl('index'),
+        PrivacyRequestResource::getUrl('index'),
+        CookieConsentGroupResource::getUrl('index'),
+        CookiePolicyVersionResource::getUrl('index'),
+        PrivacyPolicyVersionResource::getUrl('index'),
+        PrivacyOperationAuditResource::getUrl('index'),
     ] as $url) {
         get($url)->assertForbidden();
     }
@@ -184,7 +204,8 @@ it('seeds idempotently', function () {
         ->and(PostReport::count())->toBe(1)
         ->and(EmailLog::count())->toBe(1)
         ->and(CmsPage::count())->toBe(2)
-        ->and(SiteNotification::count())->toBe(1);
+        ->and(SiteNotification::count())->toBe(1)
+        ->and(PrivacyRequest::count())->toBe(1);
 });
 
 it('shows the seeded banner to a signed-in member until they dismiss it, and never to a guest', function () {
@@ -196,4 +217,34 @@ it('shows the seeded banner to a signed-in member until they dismiss it, and nev
         ->and($banners->forViewer($this->member)->pluck('id')->all())->toBe([$banner->id])
         ->and($dismissals->dismiss($this->member, $banner->id))->toBeTrue()
         ->and($dismissals->dismissedIdsFor($this->member))->toBe([$banner->id]);
+});
+
+it('lets staff generate the seeded export, and the file holds what every package registered', function () {
+    Storage::fake('local');
+    actingAs($this->admin);
+    Filament::setCurrentPanel('admin');
+    $request = PrivacyRequest::sole();
+
+    Livewire::test(ViewPrivacyRequest::class, ['record' => $request->getKey()])->callAction('export')->assertNotified();
+
+    $file = json_decode(Storage::disk('local')->get($request->refresh()->export_path), true);
+
+    expect($file)->toHaveKeys(['generated_at', 'user', 'forums', 'email_logs', 'entitlements', 'compliance'])
+        ->and($file['user']['email'])->toBe($this->member->email)
+        ->and($file['forums']['threads'])->not->toBeEmpty();
+});
+
+it('asks the member for cookie consent and policy acceptance, and remembers their answer', function () {
+    $consent = app(CookieConsent::class);
+    $policy = app(PolicyAcceptance::class);
+
+    expect(array_column($consent->enabledGroups(), 'key'))->toBe(['necessary', 'analytics'])
+        ->and($policy->hasAcknowledgedActivePolicy($this->member))->toBeFalse();
+
+    $saved = $consent->save($this->member, ['groups' => ['analytics' => true]], '127.0.0.1', 'browser');
+    $policy->accept($this->member, '127.0.0.1', 'browser');
+
+    expect($saved->consent['groups'])->toBe(['necessary' => true, 'analytics' => true])
+        ->and($consent->requiresReconsent($saved))->toBeFalse()
+        ->and($policy->hasAcknowledgedActivePolicy($this->member))->toBeTrue();
 });

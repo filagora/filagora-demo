@@ -4,6 +4,11 @@ namespace Database\Seeders;
 
 use App\Models\User;
 use Filagora\Cms\Models\CmsPage;
+use Filagora\Compliance\Models\CookieConsentCookie;
+use Filagora\Compliance\Models\CookieConsentGroup;
+use Filagora\Compliance\Models\CookiePolicyVersion;
+use Filagora\Compliance\Models\PrivacyPolicyVersion;
+use Filagora\Compliance\Models\PrivacyRequest;
 use Filagora\Core\Models\Setting;
 use Filagora\Entitlements\Enums\EntitlementRequestStatus;
 use Filagora\Entitlements\Models\EntitlementDefinition;
@@ -58,6 +63,7 @@ class DemoSeeder extends Seeder
         $this->seedEmailLog($member);
         $this->seedPages();
         $this->seedAnnouncement();
+        $this->seedCompliance($member);
     }
 
     /**
@@ -146,6 +152,33 @@ class DemoSeeder extends Seeder
                 'audience' => 'authenticated_only',
                 'severity' => 'info',
             ],
+        );
+    }
+
+    /**
+     * Cookie consent groups, one version of each policy, and a data export request waiting for
+     * staff, so the Privacy and compliance screens have something to show.
+     */
+    private function seedCompliance(User $member): void
+    {
+        $necessary = CookieConsentGroup::query()->firstOrCreate(
+            ['group_key' => 'necessary'],
+            ['label' => 'Necessary', 'description' => 'Needed for the site to work.', 'is_required' => true, 'sort_order' => 1],
+        );
+        $analytics = CookieConsentGroup::query()->firstOrCreate(
+            ['group_key' => 'analytics'],
+            ['label' => 'Analytics', 'description' => 'Helps us see which pages are used.', 'sort_order' => 2],
+        );
+
+        CookieConsentCookie::query()->firstOrCreate(['cookie_name' => 'demo_session'], ['group_id' => $necessary->id, 'label' => 'Session', 'provider' => 'This site', 'retention_period' => 'Session']);
+        CookieConsentCookie::query()->firstOrCreate(['cookie_name' => 'demo_stats'], ['group_id' => $analytics->id, 'label' => 'Statistics', 'provider' => 'This site', 'retention_period' => '1 year']);
+
+        CookiePolicyVersion::query()->firstOrCreate(['version' => '2026.01.01.1'], ['label' => 'Cookie policy', 'is_active' => true]);
+        PrivacyPolicyVersion::query()->firstOrCreate(['version' => '2026.01'], ['label' => 'Privacy policy', 'summary' => 'How the demo treats your data.', 'is_active' => true]);
+
+        PrivacyRequest::query()->firstOrCreate(
+            ['user_id' => $member->id, 'type' => 'export'],
+            ['status' => 'received', 'request_details' => 'Please send me a copy of my data.', 'requested_at' => now()],
         );
     }
 }
