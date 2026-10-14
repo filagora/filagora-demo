@@ -25,13 +25,14 @@ with open("composer.json") as handle:
 
 # A symlinked checkout reports itself as dev-master, which would not satisfy the packages'
 # own ^0.2 constraints on each other, so say which release line the checkouts stand for.
-# Bump this when the packages move to a new 0.x minor.
-line = "0.2.x-dev"
+# Bump these when a package moves to a new 0.x minor.
+lines = {"forums": "0.3.x-dev"}
+default_line = "0.2.x-dev"
 local = [
     {
         "type": "path",
         "url": f"/var/www/filagora-{name}",
-        "options": {"symlink": True, "versions": {f"filagora/filagora-{name}": line}},
+        "options": {"symlink": True, "versions": {f"filagora/filagora-{name}": lines.get(name, default_line)}},
     }
     for name in ("core", "entitlements", "forums", "logs", "cms")
 ]

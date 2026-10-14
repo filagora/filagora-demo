@@ -25,9 +25,13 @@ use Filagora\Forums\Filament\Resources\ForumGroups\ForumGroupResource;
 use Filagora\Forums\Filament\Resources\Forums\ForumResource;
 use Filagora\Forums\Filament\Resources\PostReports\PostReportResource;
 use Filagora\Forums\Filament\Resources\Posts\PostResource;
+use Filagora\Forums\Filament\Resources\SiteNotifications\SiteNotificationResource;
 use Filagora\Forums\Filament\Resources\Threads\ThreadResource;
 use Filagora\Forums\Models\PostReport;
+use Filagora\Forums\Models\SiteNotification;
 use Filagora\Forums\Models\Thread;
+use Filagora\Forums\Services\ActiveAnnouncements;
+use Filagora\Forums\Services\AnnouncementDismissals;
 use Filagora\Logs\Filament\Resources\EmailLogs\EmailLogResource;
 use Filagora\Logs\Models\EmailLog;
 use Filament\Facades\Filament;
@@ -80,6 +84,7 @@ it('opens the dashboard and every Filagora screen for staff', function () {
         CmsNavigationResource::getUrl('index'),
         CmsBlockResource::getUrl('index'),
         CmsMediaAssetResource::getUrl('index'),
+        SiteNotificationResource::getUrl('index'),
     ] as $url) {
         get($url)->assertOk();
     }
@@ -106,6 +111,7 @@ it('keeps staff screens closed to a member without entitlements', function () {
         CmsNavigationResource::getUrl('index'),
         CmsBlockResource::getUrl('index'),
         CmsMediaAssetResource::getUrl('index'),
+        SiteNotificationResource::getUrl('index'),
     ] as $url) {
         get($url)->assertForbidden();
     }
@@ -177,5 +183,17 @@ it('seeds idempotently', function () {
         ->and(Thread::count())->toBe(2)
         ->and(PostReport::count())->toBe(1)
         ->and(EmailLog::count())->toBe(1)
-        ->and(CmsPage::count())->toBe(2);
+        ->and(CmsPage::count())->toBe(2)
+        ->and(SiteNotification::count())->toBe(1);
+});
+
+it('shows the seeded banner to a signed-in member until they dismiss it, and never to a guest', function () {
+    $banners = app(ActiveAnnouncements::class);
+    $dismissals = app(AnnouncementDismissals::class);
+    $banner = SiteNotification::sole();
+
+    expect($banners->forViewer(null)->count())->toBe(0)
+        ->and($banners->forViewer($this->member)->pluck('id')->all())->toBe([$banner->id])
+        ->and($dismissals->dismiss($this->member, $banner->id))->toBeTrue()
+        ->and($dismissals->dismissedIdsFor($this->member))->toBe([$banner->id]);
 });
