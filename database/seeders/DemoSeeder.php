@@ -27,6 +27,10 @@ use Filagora\Forums\Models\SiteNotification;
 use Filagora\Forums\Models\Thread;
 use Filagora\Forums\Models\ThreadSubscription;
 use Filagora\Logs\Models\EmailLog;
+use Filagora\Messages\Models\PrivateConversation;
+use Filagora\Messages\Models\PrivateConversationParticipant;
+use Filagora\Messages\Models\PrivateMessage;
+use Filagora\Messages\Services\Mailbox;
 use Illuminate\Database\Seeder;
 
 /**
@@ -120,6 +124,7 @@ class DemoSeeder extends Seeder
         }
 
         $this->seedForumExtras($welcome, $admin, $member);
+        $this->seedMessages($admin, $member);
 
         $pending = Thread::query()->firstOrCreate(
             ['slug' => 'first-post'],
@@ -212,5 +217,23 @@ class DemoSeeder extends Seeder
             ['user_id' => $member->id, 'type' => 'export'],
             ['status' => 'received', 'request_details' => 'Please send me a copy of my data.', 'requested_at' => now()],
         );
+    }
+
+    /**
+     * One private conversation from the admin to the member, unread, written straight to the tables
+     * so seeding sends no email.
+     */
+    private function seedMessages(User $admin, User $member): void
+    {
+        if (PrivateConversation::query()->exists()) {
+            return;
+        }
+
+        $conversation = PrivateConversation::query()->create(['created_by_id' => $admin->id, 'subject' => 'Welcome to the demo']);
+        PrivateMessage::query()->create(['conversation_id' => $conversation->id, 'sender_id' => $admin->id, 'body' => 'Reply to this to try private messages.', 'content_format' => 'markdown']);
+        $inboxes = app(Mailbox::class)->ensureSystemFolders([$admin->id, $member->id]);
+
+        PrivateConversationParticipant::query()->create(['conversation_id' => $conversation->id, 'user_id' => $admin->id, 'folder_id' => $inboxes[$admin->id], 'is_read' => true, 'last_read_at' => now()]);
+        PrivateConversationParticipant::query()->create(['conversation_id' => $conversation->id, 'user_id' => $member->id, 'folder_id' => $inboxes[$member->id], 'is_read' => false]);
     }
 }

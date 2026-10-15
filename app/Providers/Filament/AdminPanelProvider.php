@@ -10,6 +10,7 @@ use Filagora\Entitlements\FilagoraEntitlementsPlugin;
 use Filagora\Forums\FilagoraForumsPlugin;
 use Filagora\Forums\Filament\Widgets\ModerationQueueStats;
 use Filagora\Logs\FilagoraLogsPlugin;
+use Filagora\Messages\FilagoraMessagesPlugin;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\AuthenticateSession;
 use Filament\Http\Middleware\DisableBladeIconComponents;
@@ -49,6 +50,7 @@ class AdminPanelProvider extends PanelProvider
                 FilagoraForumsPlugin::make(),
                 FilagoraLogsPlugin::make(),
                 FilagoraCompliancePlugin::make(),
+                FilagoraMessagesPlugin::make(),
             ])
             ->pages([
                 Dashboard::class,
