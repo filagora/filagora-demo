@@ -39,7 +39,7 @@ grant it created.
 The seeded forum has a thread waiting for approval and a reported reply: open **Queues →
 Moderation queue** to approve the thread and resolve the report, or browse **Forum →
 Forums, Threads, Posts**. The dashboard shows how much is waiting. **Logs → Email log** shows a logged message, and
-anything the demo sends from now on (logging is switched on in the seed). **Privacy and compliance → Privacy requests** has the member's data export request: open it and press *Generate export* (the file is written under `storage/app/private/exports/privacy`). **Forum → Announcements** has a published banner for signed-in users (the package ships the screen and the rules, not the page markup). **Content → Pages** has a published
+anything the demo sends from now on (logging is switched on in the seed). **Privacy and compliance → Privacy requests** has the member's data export request: open it and press *Generate export* (the file is written under `storage/app/private/exports/privacy`). The welcome thread also has a poll, a like and a follower (the member), which the forums package turns into votes, reaction counts and update emails once your pages call it. **Forum → Announcements** has a published banner for signed-in users (the package ships the screen and the rules, not the page markup). **Content → Pages** has a published
 "Welcome" page with a hero block and a draft "About" page: edit a block, save the draft, then publish.
 
 These passwords are public. This is a development app, never deploy it.
