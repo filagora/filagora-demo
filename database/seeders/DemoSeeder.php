@@ -14,12 +14,18 @@ use Filagora\Entitlements\Enums\EntitlementRequestStatus;
 use Filagora\Entitlements\Models\EntitlementDefinition;
 use Filagora\Entitlements\Models\EntitlementRequest;
 use Filagora\Entitlements\Models\UserEntitlementGrant;
+use Filagora\Forums\Enums\PollStatus;
 use Filagora\Forums\Models\Forum;
 use Filagora\Forums\Models\ForumGroup;
+use Filagora\Forums\Models\Poll;
+use Filagora\Forums\Models\PollOption;
+use Filagora\Forums\Models\PollQuestion;
 use Filagora\Forums\Models\Post;
 use Filagora\Forums\Models\PostReport;
+use Filagora\Forums\Models\Reaction;
 use Filagora\Forums\Models\SiteNotification;
 use Filagora\Forums\Models\Thread;
+use Filagora\Forums\Models\ThreadSubscription;
 use Filagora\Logs\Models\EmailLog;
 use Illuminate\Database\Seeder;
 
@@ -70,6 +76,30 @@ class DemoSeeder extends Seeder
      * A forum with an approved thread (one reply of the member's, reported), and a thread
      * waiting for approval, so the moderation queue and reports screens have something to show.
      */
+    /**
+     * A poll on the welcome thread, a like on its first post, and the member following it, so the
+     * add-on tables have rows (a digest row appears when the daily digest is queued).
+     */
+    private function seedForumExtras(Thread $welcome, User $admin, User $member): void
+    {
+        if (! Poll::query()->where('thread_id', $welcome->id)->exists()) {
+            $poll = Poll::query()->create(['thread_id' => $welcome->id, 'created_by_id' => $admin->id, 'status' => PollStatus::OPEN]);
+            $question = PollQuestion::query()->create(['poll_id' => $poll->id, 'prompt' => 'What should the demo show next?', 'sort_order' => 0]);
+
+            foreach (['Polls', 'Private messages', 'Search'] as $position => $label) {
+                PollOption::query()->create(['poll_question_id' => $question->id, 'label' => $label, 'sort_order' => $position]);
+            }
+        }
+
+        $first = $welcome->posts()->orderBy('id')->first();
+
+        if ($first !== null) {
+            Reaction::query()->firstOrCreate(['post_id' => $first->id, 'user_id' => $member->id, 'type' => 'like']);
+        }
+
+        ThreadSubscription::query()->firstOrCreate(['thread_id' => $welcome->id, 'user_id' => $member->id]);
+    }
+
     private function seedForum(User $admin, User $member): void
     {
         $group = ForumGroup::query()->firstOrCreate(['slug' => 'community'], ['name' => 'Community']);
@@ -88,6 +118,8 @@ class DemoSeeder extends Seeder
             $reply = Post::query()->create(['thread_id' => $welcome->id, 'author_id' => $member->id, 'body' => 'Buy cheap watches here!', 'content_format' => 'markdown']);
             PostReport::query()->create(['post_id' => $reply->id, 'thread_id' => $welcome->id, 'reporter_id' => $admin->id, 'reason' => 'Looks like spam.']);
         }
+
+        $this->seedForumExtras($welcome, $admin, $member);
 
         $pending = Thread::query()->firstOrCreate(
             ['slug' => 'first-post'],

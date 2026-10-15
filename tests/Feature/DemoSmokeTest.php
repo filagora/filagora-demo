@@ -36,11 +36,16 @@ use Filagora\Forums\Filament\Resources\PostReports\PostReportResource;
 use Filagora\Forums\Filament\Resources\Posts\PostResource;
 use Filagora\Forums\Filament\Resources\SiteNotifications\SiteNotificationResource;
 use Filagora\Forums\Filament\Resources\Threads\ThreadResource;
+use Filagora\Forums\Models\Poll;
 use Filagora\Forums\Models\PostReport;
+use Filagora\Forums\Models\Reaction;
 use Filagora\Forums\Models\SiteNotification;
 use Filagora\Forums\Models\Thread;
 use Filagora\Forums\Services\ActiveAnnouncements;
 use Filagora\Forums\Services\AnnouncementDismissals;
+use Filagora\Forums\Services\Polls;
+use Filagora\Forums\Services\Reactions;
+use Filagora\Forums\Services\Subscriptions;
 use Filagora\Logs\Filament\Resources\EmailLogs\EmailLogResource;
 use Filagora\Logs\Models\EmailLog;
 use Filament\Facades\Filament;
@@ -205,7 +210,9 @@ it('seeds idempotently', function () {
         ->and(EmailLog::count())->toBe(1)
         ->and(CmsPage::count())->toBe(2)
         ->and(SiteNotification::count())->toBe(1)
-        ->and(PrivacyRequest::count())->toBe(1);
+        ->and(PrivacyRequest::count())->toBe(1)
+        ->and(Poll::count())->toBe(1)
+        ->and(Reaction::count())->toBe(1);
 });
 
 it('shows the seeded banner to a signed-in member until they dismiss it, and never to a guest', function () {
@@ -247,4 +254,22 @@ it('asks the member for cookie consent and policy acceptance, and remembers thei
     expect($saved->consent['groups'])->toBe(['necessary' => true, 'analytics' => true])
         ->and($consent->requiresReconsent($saved))->toBeFalse()
         ->and($policy->hasAcknowledgedActivePolicy($this->member))->toBeTrue();
+});
+
+it('lets the member vote once in the seeded poll and see the result, react to the first post and follow the thread', function () {
+    $poll = Poll::sole();
+    $poll->load('questions.options');
+    $thread = $poll->thread;
+    $first = $thread->posts()->orderBy('id')->first();
+    $polls = app(Polls::class);
+
+    expect($polls->canSeeResults($poll, $this->member))->toBeFalse();
+
+    $polls->vote($this->member, $poll, [$poll->questions[0]->id => [$poll->questions[0]->options[1]->id]]);
+
+    expect($polls->canSeeResults($poll, $this->member))->toBeTrue()
+        ->and($polls->results($poll)['questions'][0]['options'][1]['votes'])->toBe(1)
+        ->and(app(Reactions::class)->toggle($this->admin, $first))->toBeTrue()
+        ->and(app(Reactions::class)->counts([$first->id])[$first->id]['like'])->toBe(2)
+        ->and(app(Subscriptions::class)->isSubscribed($this->member, $thread))->toBeTrue();
 });
