@@ -48,6 +48,9 @@ use Filagora\Forums\Services\Reactions;
 use Filagora\Forums\Services\Subscriptions;
 use Filagora\Logs\Filament\Resources\EmailLogs\EmailLogResource;
 use Filagora\Logs\Models\EmailLog;
+use Filagora\Messages\Models\PrivateConversation;
+use Filagora\Messages\Services\Mailbox;
+use Filagora\Messages\Services\Messages;
 use Filament\Facades\Filament;
 use Illuminate\Support\Facades\Storage;
 use Livewire\Livewire;
@@ -212,7 +215,8 @@ it('seeds idempotently', function () {
         ->and(SiteNotification::count())->toBe(1)
         ->and(PrivacyRequest::count())->toBe(1)
         ->and(Poll::count())->toBe(1)
-        ->and(Reaction::count())->toBe(1);
+        ->and(Reaction::count())->toBe(1)
+        ->and(PrivateConversation::count())->toBe(1);
 });
 
 it('shows the seeded banner to a signed-in member until they dismiss it, and never to a guest', function () {
@@ -272,4 +276,21 @@ it('lets the member vote once in the seeded poll and see the result, react to th
         ->and(app(Reactions::class)->toggle($this->admin, $first))->toBeTrue()
         ->and(app(Reactions::class)->counts([$first->id])[$first->id]['like'])->toBe(2)
         ->and(app(Subscriptions::class)->isSubscribed($this->member, $thread))->toBeTrue();
+});
+
+it('lets the member read the seeded message, reply to it and trash the conversation', function () {
+    $conversation = PrivateConversation::sole();
+    $mailbox = app(Mailbox::class);
+    $messages = app(Messages::class);
+
+    expect($mailbox->unreadCount($this->member))->toBe(1);
+
+    $messages->open($this->member, $conversation);
+    $messages->reply($this->member, $conversation, 'Thanks!');
+
+    expect($mailbox->unreadCount($this->member))->toBe(0)
+        ->and($mailbox->unreadCount($this->admin))->toBe(1)
+        ->and($conversation->messages()->count())->toBe(2)
+        ->and($mailbox->trash($this->member, [$conversation->id]))->toBe(1)
+        ->and($mailbox->unreadCount($this->member))->toBe(0);
 });
