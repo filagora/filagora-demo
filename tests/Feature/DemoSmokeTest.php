@@ -9,6 +9,7 @@ use Filagora\Cms\Filament\Resources\CmsMediaAssets\CmsMediaAssetResource;
 use Filagora\Cms\Filament\Resources\CmsNavigations\CmsNavigationResource;
 use Filagora\Cms\Filament\Resources\CmsPages\CmsPageResource;
 use Filagora\Cms\Models\CmsPage;
+use Filagora\Cms\Search\CmsSearch;
 use Filagora\Compliance\Filament\Resources\CookieConsentGroups\CookieConsentGroupResource;
 use Filagora\Compliance\Filament\Resources\CookiePolicyVersions\CookiePolicyVersionResource;
 use Filagora\Compliance\Filament\Resources\PrivacyOperationAudits\PrivacyOperationAuditResource;
@@ -41,6 +42,8 @@ use Filagora\Forums\Models\PostReport;
 use Filagora\Forums\Models\Reaction;
 use Filagora\Forums\Models\SiteNotification;
 use Filagora\Forums\Models\Thread;
+use Filagora\Forums\Search\ForumSearch;
+use Filagora\Forums\Search\ForumSearchCriteria;
 use Filagora\Forums\Services\ActiveAnnouncements;
 use Filagora\Forums\Services\AnnouncementDismissals;
 use Filagora\Forums\Services\Polls;
@@ -51,6 +54,8 @@ use Filagora\Logs\Models\EmailLog;
 use Filagora\Messages\Models\PrivateConversation;
 use Filagora\Messages\Services\Mailbox;
 use Filagora\Messages\Services\Messages;
+use Filagora\Search\Engines\ArrayEngine;
+use Filagora\Search\Support\SearchEngines;
 use Filament\Facades\Filament;
 use Illuminate\Support\Facades\Storage;
 use Livewire\Livewire;
@@ -293,4 +298,25 @@ it('lets the member read the seeded message, reply to it and trash the conversat
         ->and($conversation->messages()->count())->toBe(2)
         ->and($mailbox->trash($this->member, [$conversation->id]))->toBe(1)
         ->and($mailbox->unreadCount($this->member))->toBe(0);
+});
+
+it('finds the seeded thread and page by their words, on the database engine', function () {
+    config(['filagora-forums.search.fulltext' => false]);
+    $threads = app(ForumSearch::class)->threads(new ForumSearchCriteria('welcome'), null)->getCollection();
+    $pages = app(CmsSearch::class)->pages('welcome')->getCollection();
+
+    expect($threads->pluck('title')->all())->toBe(['Welcome to the demo forum'])
+        ->and($pages->pluck('title')->all())->toBe(['Welcome'])
+        ->and(app(CmsSearch::class)->pages('browse the forum')->getCollection()->pluck('title')->all())->toBe(['Welcome']);
+});
+
+it('gives the same answers from the array engine once the indexes are built', function () {
+    config(['filagora-search.engine' => 'array']);
+    app(SearchEngines::class)->extend('array', fn () => $engine ??= new ArrayEngine);
+
+    artisan('filagora:search:reindex', ['--sync-settings' => true])->assertExitCode(0);
+    artisan('filagora:search:check-health')->expectsOutput('All search indexes are healthy.')->assertExitCode(0);
+
+    expect(app(ForumSearch::class)->threads(new ForumSearchCriteria('welcome'), null)->getCollection()->pluck('title')->all())->toBe(['Welcome to the demo forum'])
+        ->and(app(CmsSearch::class)->pages('welcome')->getCollection()->pluck('title')->all())->toBe(['Welcome']);
 });
