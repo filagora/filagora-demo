@@ -11,3 +11,4 @@ services:
       - ../../filagora-compliance:/var/www/filagora-compliance
       - ../../filagora-messages:/var/www/filagora-messages
       - ../../filagora-search:/var/www/filagora-search
+      - ../../filagora-push:/var/www/filagora-push

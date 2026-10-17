@@ -38,6 +38,8 @@ use Filagora\Forums\Filament\Resources\Posts\PostResource;
 use Filagora\Forums\Filament\Resources\SiteNotifications\SiteNotificationResource;
 use Filagora\Forums\Filament\Resources\Threads\ThreadResource;
 use Filagora\Forums\Models\Poll;
+use Filagora\Forums\Models\PostAttachment;
+use Filagora\Forums\Models\PostMention;
 use Filagora\Forums\Models\PostReport;
 use Filagora\Forums\Models\Reaction;
 use Filagora\Forums\Models\SiteNotification;
@@ -46,17 +48,27 @@ use Filagora\Forums\Search\ForumSearch;
 use Filagora\Forums\Search\ForumSearchCriteria;
 use Filagora\Forums\Services\ActiveAnnouncements;
 use Filagora\Forums\Services\AnnouncementDismissals;
+use Filagora\Forums\Services\Attachments;
+use Filagora\Forums\Services\Mentions;
 use Filagora\Forums\Services\Polls;
 use Filagora\Forums\Services\Reactions;
+use Filagora\Forums\Services\ReadTracking;
 use Filagora\Forums\Services\Subscriptions;
 use Filagora\Logs\Filament\Resources\EmailLogs\EmailLogResource;
 use Filagora\Logs\Models\EmailLog;
 use Filagora\Messages\Models\PrivateConversation;
 use Filagora\Messages\Services\Mailbox;
 use Filagora\Messages\Services\Messages;
+use Filagora\Push\Enums\PushCategory;
+use Filagora\Push\Exceptions\PushRefused;
+use Filagora\Push\Notifications\WebPushAlert;
+use Filagora\Push\Services\PushNotifier;
+use Filagora\Push\Services\PushSubscriptions;
 use Filagora\Search\Engines\ArrayEngine;
 use Filagora\Search\Support\SearchEngines;
 use Filament\Facades\Filament;
+use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Notification;
 use Illuminate\Support\Facades\Storage;
 use Livewire\Livewire;
 
@@ -66,6 +78,7 @@ use function Pest\Laravel\get;
 use function Pest\Laravel\seed;
 
 beforeEach(function () {
+    Storage::fake('local');
     seed(DemoSeeder::class);
 
     $this->admin = User::where('email', 'admin@example.test')->sole();
@@ -319,4 +332,53 @@ it('gives the same answers from the array engine once the indexes are built', fu
 
     expect(app(ForumSearch::class)->threads(new ForumSearchCriteria('welcome'), null)->getCollection()->pluck('title')->all())->toBe(['Welcome to the demo forum'])
         ->and(app(CmsSearch::class)->pages('welcome')->getCollection()->pluck('title')->all())->toBe(['Welcome']);
+});
+
+it('has the member mentioned in the welcome post, once', function () {
+    $post = Thread::query()->where('title', 'Welcome to the demo forum')->sole()->posts()->orderBy('id')->first();
+    $mentions = app(Mentions::class);
+
+    expect($mentions->usernames($post->body))->toBe(['member'])
+        ->and(PostMention::where('post_id', $post->id)->pluck('user_id')->all())->toBe([$this->member->id])
+        ->and($mentions->sync($post))->toHaveCount(0);
+});
+
+it('tracks what each person has read', function () {
+    $thread = Thread::query()->where('title', 'Welcome to the demo forum')->sole();
+    $reads = app(ReadTracking::class);
+
+    expect($reads->isUnread($this->admin, $thread))->toBeFalse()
+        ->and($reads->isUnread($this->member, $thread))->toBeTrue()
+        ->and($reads->unreadThreads($this->member)->pluck('id')->all())->toContain($thread->id);
+
+    $reads->markThreadRead($this->member, $thread);
+
+    expect($reads->isUnread($this->member, $thread))->toBeFalse()
+        ->and($reads->unreadThreads($this->member)->pluck('id')->all())->not->toContain($thread->id);
+});
+
+it('serves the seeded file to a guest, and keeps a waiting upload to its uploader', function () {
+    $files = app(Attachments::class);
+    $seeded = PostAttachment::sole();
+
+    ob_start();
+    $files->stream($seeded)->sendContent();
+
+    expect(ob_get_clean())->toBe('Welcome to the demo.')->and($files->canView($seeded, null))->toBeTrue();
+
+    $waiting = $files->storeInline($this->member, UploadedFile::fake()->image('mine.png', 50, 50));
+
+    expect($files->canView($waiting, $this->member))->toBeTrue()->and($files->canView($waiting, $this->admin))->toBeFalse()->and($files->canView($waiting, null))->toBeFalse();
+});
+
+it('pushes to the member\'s subscribed browser and refuses an endpoint on an internal host', function () {
+    Notification::fake();
+    $push = app(PushSubscriptions::class);
+
+    expect($push->hasAny($this->member))->toBeTrue()->and($push->hasAny($this->admin))->toBeFalse()
+        ->and(app(PushNotifier::class)->send($this->member, PushCategory::MENTION, 'Demo', 'Hello', '/'))->toBe(1)
+        ->and(app(PushNotifier::class)->send($this->admin, PushCategory::MENTION, 'Demo', 'Hello', '/'))->toBe(0)
+        ->and(fn () => $push->store($this->admin, 'https://internal.test/hook', 'k', 'a'))->toThrow(PushRefused::class);
+
+    Notification::assertSentOnDemandTimes(WebPushAlert::class, 1);
 });

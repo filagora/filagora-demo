@@ -21,17 +21,22 @@ use Filagora\Forums\Models\Poll;
 use Filagora\Forums\Models\PollOption;
 use Filagora\Forums\Models\PollQuestion;
 use Filagora\Forums\Models\Post;
+use Filagora\Forums\Models\PostAttachment;
+use Filagora\Forums\Models\PostMention;
 use Filagora\Forums\Models\PostReport;
 use Filagora\Forums\Models\Reaction;
 use Filagora\Forums\Models\SiteNotification;
 use Filagora\Forums\Models\Thread;
+use Filagora\Forums\Models\ThreadRead;
 use Filagora\Forums\Models\ThreadSubscription;
 use Filagora\Logs\Models\EmailLog;
 use Filagora\Messages\Models\PrivateConversation;
 use Filagora\Messages\Models\PrivateConversationParticipant;
 use Filagora\Messages\Models\PrivateMessage;
 use Filagora\Messages\Services\Mailbox;
+use Filagora\Push\Services\PushSubscriptions;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\Storage;
 
 /**
  * A staff user who holds every `filagora.*` entitlement through one wildcard grant, a
@@ -44,7 +49,7 @@ class DemoSeeder extends Seeder
     {
         $admin = User::query()->updateOrCreate(
             ['email' => 'admin@example.test'],
-            ['name' => 'Demo Admin', 'password' => 'password'],
+            ['name' => 'Demo Admin', 'username' => 'admin', 'password' => 'password'],
         );
         $admin->forceFill(['email_verified_at' => now()])->save();
 
@@ -55,7 +60,7 @@ class DemoSeeder extends Seeder
 
         $member = User::query()->updateOrCreate(
             ['email' => 'member@example.test'],
-            ['name' => 'Demo Member', 'password' => 'password'],
+            ['name' => 'Demo Member', 'username' => 'member', 'password' => 'password'],
         );
         $member->forceFill(['email_verified_at' => now()])->save();
 
@@ -124,6 +129,7 @@ class DemoSeeder extends Seeder
         }
 
         $this->seedForumExtras($welcome, $admin, $member);
+        $this->seedMoreForumExtras($welcome, $admin, $member);
         $this->seedMessages($admin, $member);
 
         $pending = Thread::query()->firstOrCreate(
@@ -235,5 +241,43 @@ class DemoSeeder extends Seeder
 
         PrivateConversationParticipant::query()->create(['conversation_id' => $conversation->id, 'user_id' => $admin->id, 'folder_id' => $inboxes[$admin->id], 'is_read' => true, 'last_read_at' => now()]);
         PrivateConversationParticipant::query()->create(['conversation_id' => $conversation->id, 'user_id' => $member->id, 'folder_id' => $inboxes[$member->id], 'is_read' => false]);
+    }
+
+    /**
+     * A mention of the member in the admin's welcome post, a stored file on it, the admin's read
+     * marker for the thread, and a browser subscribed to push for the member. Written straight to
+     * the tables (and the storage disk), so seeding sends no email or push.
+     */
+    private function seedMoreForumExtras(Thread $welcome, User $admin, User $member): void
+    {
+        $first = $welcome->posts()->orderBy('id')->first();
+
+        if ($first === null) {
+            return;
+        }
+
+        $first->forceFill(['body' => 'Say hello, @member.'])->saveQuietly();
+        PostMention::query()->firstOrCreate(['post_id' => $first->id, 'user_id' => $member->id], ['notified_at' => now()]);
+
+        if (! PostAttachment::query()->where('post_id', $first->id)->exists()) {
+            Storage::disk('local')->put('attachments/demo/welcome.txt', 'Welcome to the demo.');
+            PostAttachment::query()->create([
+                'post_id' => $first->id,
+                'thread_id' => $welcome->id,
+                'uploader_id' => $admin->id,
+                'original_filename' => 'welcome.txt',
+                'extension' => 'txt',
+                'mime_type' => 'text/plain',
+                'filesize_bytes' => 20,
+                'storage_disk' => 'local',
+                'storage_path' => 'attachments/demo/welcome.txt',
+            ]);
+        }
+
+        ThreadRead::query()->firstOrCreate(['user_id' => $admin->id, 'thread_id' => $welcome->id], ['last_read_at' => now()]);
+
+        if (! app(PushSubscriptions::class)->hasAny($member)) {
+            app(PushSubscriptions::class)->store($member, 'https://fcm.googleapis.com/fcm/send/demo-member', 'demo-public-key', 'demo-auth-token', null, 'Demo browser');
+        }
     }
 }
