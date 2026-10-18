@@ -97,7 +97,14 @@ it('passes the Filagora doctor on a migrated install', function () {
 
 it('sends guests to the sign-in page', function () {
     get('/admin')->assertRedirect('/admin/login');
-    get('/')->assertRedirect('/admin');
+});
+
+it('leaves the site root free for the host app', function () {
+    get('/')->assertNotFound();
+});
+
+it('serves the panel from the configured path', function () {
+    expect(Filament::getPanel('admin')->getPath())->toBe(config('demo.panel_path'));
 });
 
 it('shows the sign-in page', function () {
