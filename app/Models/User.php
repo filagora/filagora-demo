@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Database\Factories\UserFactory;
 use Filagora\Entitlements\Concerns\HasEntitlements;
+use Filagora\Memberships\Concerns\HasMemberships;
 use Filament\Models\Contracts\FilamentUser;
 use Filament\Panel;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
@@ -18,7 +19,7 @@ use Illuminate\Notifications\Notifiable;
 class User extends Authenticatable implements FilamentUser, MustVerifyEmail
 {
     /** @use HasFactory<UserFactory> */
-    use HasEntitlements, HasFactory, Notifiable;
+    use HasEntitlements, HasFactory, HasMemberships, Notifiable;
 
     /**
      * Anyone who can sign in may open the demo panel. What they can do inside it is

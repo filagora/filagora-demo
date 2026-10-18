@@ -10,6 +10,7 @@ use Filagora\Core\Navigation\NavigationGroupRegistry;
 use Filagora\Entitlements\Filament\RelationManagers\UserEntitlementRequestsRelationManager;
 use Filagora\Entitlements\Filament\RelationManagers\UserEntitlementsRelationManager;
 use Filagora\Entitlements\Support\Abilities;
+use Filagora\Memberships\Filament\RelationManagers\UserMembershipsRelationManager;
 use Filament\Forms\Components\TextInput;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
@@ -75,6 +76,7 @@ class UserResource extends Resource
         return [
             UserEntitlementsRelationManager::class,
             UserEntitlementRequestsRelationManager::class,
+            UserMembershipsRelationManager::class,
         ];
     }
 
