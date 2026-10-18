@@ -30,6 +30,9 @@ use Filagora\Forums\Models\Thread;
 use Filagora\Forums\Models\ThreadRead;
 use Filagora\Forums\Models\ThreadSubscription;
 use Filagora\Logs\Models\EmailLog;
+use Filagora\Memberships\Models\BillingEventLog;
+use Filagora\Memberships\Models\MembershipPlan;
+use Filagora\Memberships\Services\Memberships;
 use Filagora\Messages\Models\PrivateConversation;
 use Filagora\Messages\Models\PrivateConversationParticipant;
 use Filagora\Messages\Models\PrivateMessage;
@@ -79,6 +82,7 @@ class DemoSeeder extends Seeder
         $this->seedPages();
         $this->seedAnnouncement();
         $this->seedCompliance($member);
+        $this->seedMemberships($member);
     }
 
     /**
@@ -279,5 +283,39 @@ class DemoSeeder extends Seeder
         if (! app(PushSubscriptions::class)->hasAny($member)) {
             app(PushSubscriptions::class)->store($member, 'https://fcm.googleapis.com/fcm/send/demo-member', 'demo-public-key', 'demo-auth-token', null, 'Demo browser');
         }
+    }
+
+    /**
+     * A free plan the member holds, a paid PayPal plan with a price in two currencies (not
+     * connected to a PayPal account, so it cannot be bought), and a failed billing event, so
+     * the plans screen, the billing log and its navigation badge have something to show.
+     */
+    private function seedMemberships(User $member): void
+    {
+        $free = MembershipPlan::query()->updateOrCreate(
+            ['code' => 'supporter-free'],
+            ['name' => 'Supporter (free)', 'description' => 'Free membership.', 'is_active' => true, 'is_free' => true, 'entitlements' => ['demo.supporter'], 'feature_list' => ['The supporter badge'], 'sort_order' => 1],
+        );
+
+        $gold = MembershipPlan::query()->updateOrCreate(
+            ['code' => 'supporter-gold'],
+            ['name' => 'Supporter (gold)', 'description' => 'Paid membership, billed monthly.', 'is_active' => true, 'is_free' => false, 'billing_interval' => 'monthly', 'provider' => 'paypal', 'entitlements' => ['demo.supporter', 'demo.gold'], 'feature_list' => ['Everything in free', 'A gold badge'], 'sort_order' => 2],
+        );
+
+        foreach (['USD' => ['5.00', true], 'EUR' => ['4.50', false]] as $currency => [$amount, $default]) {
+            $gold->prices()->updateOrCreate(['currency' => $currency], ['amount' => $amount, 'is_default' => $default]);
+        }
+
+        app(Memberships::class)->activateLocal($member, $free);
+
+        BillingEventLog::query()->firstOrCreate(
+            ['provider' => 'paypal', 'event_id' => 'WH-DEMO-FAILED'],
+            [
+                'event_type' => 'BILLING.SUBSCRIPTION.ACTIVATED',
+                'processing_status' => 'failed',
+                'error_message' => 'PayPal webhook signature verification failed.',
+                'payload' => ['id' => 'WH-DEMO-FAILED', 'event_type' => 'BILLING.SUBSCRIPTION.ACTIVATED', 'resource' => ['id' => 'I-DEMO', 'status' => 'ACTIVE']],
+            ],
+        );
     }
 }

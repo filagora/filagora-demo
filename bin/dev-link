@@ -7,7 +7,7 @@
 set -euo pipefail
 cd "$(dirname "$0")/.."
 
-packages=(core entitlements forums logs cms compliance messages search push)
+packages=(core entitlements forums logs cms compliance messages search push memberships)
 
 for name in "${packages[@]}"; do
   if [ ! -d "../filagora-${name}" ]; then
@@ -26,7 +26,7 @@ with open("composer.json") as handle:
 # A symlinked checkout reports itself as dev-master, which would not satisfy the packages'
 # own ^0.2 constraints on each other, so say which release line the checkouts stand for.
 # Bump these when a package moves to a new 0.x minor.
-lines = {"forums": "0.6.x-dev", "cms": "0.3.x-dev", "compliance": "0.1.x-dev", "messages": "0.2.x-dev", "search": "0.1.x-dev", "push": "0.1.x-dev"}
+lines = {"forums": "0.6.x-dev", "cms": "0.3.x-dev", "compliance": "0.1.x-dev", "messages": "0.2.x-dev", "search": "0.1.x-dev", "push": "0.1.x-dev", "memberships": "0.1.x-dev"}
 default_line = "0.2.x-dev"
 local = [
     {
@@ -34,7 +34,7 @@ local = [
         "url": f"/var/www/filagora-{name}",
         "options": {"symlink": True, "versions": {f"filagora/filagora-{name}": lines.get(name, default_line)}},
     }
-    for name in ("core", "entitlements", "forums", "logs", "cms", "compliance", "messages", "search", "push")
+    for name in ("core", "entitlements", "forums", "logs", "cms", "compliance", "messages", "search", "push", "memberships")
 ]
 rest = [repo for repo in data.get("repositories", []) if repo.get("type") != "path"]
 data["repositories"] = local + rest
@@ -55,6 +55,7 @@ ddev composer require --no-interaction \
   filagora/filagora-messages:@dev \
   filagora/filagora-search:@dev \
   filagora/filagora-push:@dev
+  filagora/filagora-memberships:@dev
 
 echo
 echo "Linked. vendor/filagora/ now points at your checkouts:"

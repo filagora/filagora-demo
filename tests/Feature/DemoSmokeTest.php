@@ -56,6 +56,12 @@ use Filagora\Forums\Services\ReadTracking;
 use Filagora\Forums\Services\Subscriptions;
 use Filagora\Logs\Filament\Resources\EmailLogs\EmailLogResource;
 use Filagora\Logs\Models\EmailLog;
+use Filagora\Memberships\Filament\RelationManagers\UserMembershipsRelationManager;
+use Filagora\Memberships\Filament\Resources\BillingEvents\BillingEventResource;
+use Filagora\Memberships\Filament\Resources\MembershipPlans\MembershipPlanResource;
+use Filagora\Memberships\Models\MembershipPlan;
+use Filagora\Memberships\Models\UserMembership;
+use Filagora\Memberships\Services\Memberships;
 use Filagora\Messages\Models\PrivateConversation;
 use Filagora\Messages\Services\Mailbox;
 use Filagora\Messages\Services\Messages;
@@ -116,6 +122,8 @@ it('opens the dashboard and every Filagora screen for staff', function () {
         PostReportResource::getUrl('index'),
         ModerationQueue::getUrl(),
         EmailLogResource::getUrl('index'),
+        MembershipPlanResource::getUrl('index'),
+        BillingEventResource::getUrl('index'),
         CmsPageResource::getUrl('index'),
         CmsNavigationResource::getUrl('index'),
         CmsBlockResource::getUrl('index'),
@@ -148,6 +156,8 @@ it('keeps staff screens closed to a member without entitlements', function () {
         PostReportResource::getUrl('index'),
         ModerationQueue::getUrl(),
         EmailLogResource::getUrl('index'),
+        MembershipPlanResource::getUrl('index'),
+        BillingEventResource::getUrl('index'),
         CmsPageResource::getUrl('index'),
         CmsNavigationResource::getUrl('index'),
         CmsBlockResource::getUrl('index'),
@@ -163,9 +173,9 @@ it('keeps staff screens closed to a member without entitlements', function () {
     }
 });
 
-it('lists the staff entitlements as one wildcard grant', function () {
+it('lists the staff entitlements as one wildcard grant, and the member\'s as what their membership brings', function () {
     expect(app(EntitlementResolver::class)->entitlementsFor($this->admin))->toBe(['filagora.*'])
-        ->and(app(EntitlementResolver::class)->entitlementsFor($this->member))->toBe([]);
+        ->and(app(EntitlementResolver::class)->entitlementsFor($this->member))->toBe(['demo.supporter']);
 });
 
 it('shows both entitlement relation managers on the user screen', function () {
@@ -381,4 +391,45 @@ it('pushes to the member\'s subscribed browser and refuses an endpoint on an int
         ->and(fn () => $push->store($this->admin, 'https://internal.test/hook', 'k', 'a'))->toThrow(PushRefused::class);
 
     Notification::assertSentOnDemandTimes(WebPushAlert::class, 1);
+});
+
+it('gives the member a free membership and the entitlement it brings', function () {
+    $membership = UserMembership::where('user_id', $this->member->id)->sole();
+
+    expect($membership->plan->code)->toBe('supporter-free')
+        ->and($membership->isCurrentlyActive())->toBeTrue()
+        ->and(app(Memberships::class)->hasActive($this->member))->toBeTrue()
+        ->and(app(Memberships::class)->hasActive($this->admin))->toBeFalse()
+        ->and(app(EntitlementResolver::class)->hasEntitlement($this->member, 'demo.supporter'))->toBeTrue()
+        ->and(app(EntitlementResolver::class)->hasEntitlement($this->member, 'demo.gold'))->toBeFalse();
+});
+
+it('lists the free and the paid plan, the paid one with a price in each currency', function () {
+    $gold = MembershipPlan::where('code', 'supporter-gold')->sole();
+
+    expect(MembershipPlan::count())->toBe(2)
+        ->and($gold->prices->pluck('amount', 'currency')->all())->toEqual(['USD' => '5.00', 'EUR' => '4.50'])
+        ->and($gold->defaultPrice()->currency)->toBe('USD')
+        ->and($gold->isCheckoutReady())->toBeFalse();
+});
+
+it('shows the memberships on the user screen to staff', function () {
+    actingAs($this->admin);
+
+    expect(UserResource::getRelations())->toContain(UserMembershipsRelationManager::class)
+        ->and(UserMembershipsRelationManager::canViewForRecord($this->member, EditUser::class))->toBeTrue();
+
+    actingAs($this->member);
+
+    expect(UserMembershipsRelationManager::canViewForRecord($this->member, EditUser::class))->toBeFalse();
+});
+
+it('badges the billing log with the failed event the seed left', function () {
+    actingAs($this->admin);
+
+    expect(BillingEventResource::getNavigationBadge())->toBe('1');
+});
+
+it('refuses a PayPal delivery on a site with no PayPal account set up', function () {
+    $this->postJson('/paypal/webhook', ['id' => 'WH-X', 'event_type' => 'BILLING.SUBSCRIPTION.ACTIVATED'])->assertStatus(400);
 });

@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "040f7b6ce90156941823dd0d733360c9",
+    "content-hash": "b3a987ef7847a249de54cf84be67833a",
     "packages": [
         {
             "name": "anourvalar/eloquent-serialize",
@@ -1503,6 +1503,70 @@
                 "source": "https://github.com/filagora/filagora-logs/tree/v0.2.2"
             },
             "time": "2026-10-14T21:35:03+00:00"
+        },
+        {
+            "name": "filagora/filagora-memberships",
+            "version": "v0.1.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/filagora/filagora-memberships.git",
+                "reference": "86031c822d630862ecfc44ac26cbd964c96ffe43"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/filagora/filagora-memberships/zipball/86031c822d630862ecfc44ac26cbd964c96ffe43",
+                "reference": "86031c822d630862ecfc44ac26cbd964c96ffe43",
+                "shasum": ""
+            },
+            "require": {
+                "filagora/filagora-core": "^0.2.2",
+                "filament/filament": "^5.0",
+                "php": "^8.4"
+            },
+            "require-dev": {
+                "filagora/filagora-entitlements": "^0.2.2",
+                "filagora/filagora-forums": "^0.6",
+                "larastan/larastan": "^3.0",
+                "laravel/pint": "^1.0",
+                "orchestra/testbench": "^11.0",
+                "pestphp/pest": "^4.0",
+                "pestphp/pest-plugin-laravel": "^4.0"
+            },
+            "suggest": {
+                "filagora/filagora-entitlements": "Memberships grant entitlements, and plans feed the definitions list.",
+                "filagora/filagora-forums": "Announcements can target members, and MembershipsPaidAccess answers the paid-access check."
+            },
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "Filagora\\Memberships\\MembershipsServiceProvider"
+                    ]
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Filagora\\Memberships\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "description": "Memberships and billing for Filagora: plans, prices, member subscriptions, PayPal checkout and webhooks, and entitlement grants.",
+            "keywords": [
+                "billing",
+                "filagora",
+                "filament",
+                "laravel",
+                "memberships",
+                "paypal"
+            ],
+            "support": {
+                "issues": "https://github.com/filagora/filagora-memberships/issues",
+                "source": "https://github.com/filagora/filagora-memberships/tree/v0.1.1"
+            },
+            "time": "2026-10-18T16:19:16+00:00"
         },
         {
             "name": "filagora/filagora-messages",
