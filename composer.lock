@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "3087e832631f4780838368912b81b69d",
+    "content-hash": "c5223c485c805437227c56aa3cf4c3e5",
     "packages": [
         {
             "name": "anourvalar/eloquent-serialize",
@@ -1570,16 +1570,16 @@
         },
         {
             "name": "filagora/filagora-messages",
-            "version": "v0.2.0",
+            "version": "v0.3.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/filagora/filagora-messages.git",
-                "reference": "d59ee0a3f7f74ac7d01dd341b57a29321a1ae7f2"
+                "reference": "c85fb5dbbbaf186dc11323544dc703e9715369cb"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/filagora/filagora-messages/zipball/d59ee0a3f7f74ac7d01dd341b57a29321a1ae7f2",
-                "reference": "d59ee0a3f7f74ac7d01dd341b57a29321a1ae7f2",
+                "url": "https://api.github.com/repos/filagora/filagora-messages/zipball/c85fb5dbbbaf186dc11323544dc703e9715369cb",
+                "reference": "c85fb5dbbbaf186dc11323544dc703e9715369cb",
                 "shasum": ""
             },
             "require": {
@@ -1625,9 +1625,9 @@
             ],
             "support": {
                 "issues": "https://github.com/filagora/filagora-messages/issues",
-                "source": "https://github.com/filagora/filagora-messages/tree/v0.2.0"
+                "source": "https://github.com/filagora/filagora-messages/tree/v0.3.0"
             },
-            "time": "2026-10-17T17:01:39+00:00"
+            "time": "2026-10-22T19:12:30+00:00"
         },
         {
             "name": "filagora/filagora-notifications",

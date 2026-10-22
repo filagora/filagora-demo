@@ -64,7 +64,9 @@ use Filagora\Memberships\Models\MembershipPlan;
 use Filagora\Memberships\Models\UserMembership;
 use Filagora\Memberships\Services\Memberships;
 use Filagora\Messages\Contracts\MessagingPolicy;
+use Filagora\Messages\Exceptions\MessageRefused;
 use Filagora\Messages\Models\PrivateConversation;
+use Filagora\Messages\Services\IgnoredUsers;
 use Filagora\Messages\Services\Mailbox;
 use Filagora\Messages\Services\Messages;
 use Filagora\Notifications\Bridges\ForumsBridge;
@@ -340,6 +342,21 @@ it('lets the member read the seeded message, reply to it and trash the conversat
         ->and($conversation->messages()->count())->toBe(2)
         ->and($mailbox->trash($this->member, [$conversation->id]))->toBe(1)
         ->and($mailbox->unreadCount($this->member))->toBe(0);
+});
+
+it('stops messages both ways once the member ignores the admin, and lets them through again after', function () {
+    $ignored = app(IgnoredUsers::class);
+    $messages = app(Messages::class);
+    $ignored->ignore($this->member, $this->admin);
+
+    expect(fn () => $messages->send($this->admin, [$this->member], 'Hello', 'Are you there?'))->toThrow(MessageRefused::class)
+        ->and(fn () => $messages->send($this->member, [$this->admin], 'Hello', 'Are you there?'))->toThrow(MessageRefused::class)
+        ->and(PrivateConversation::count())->toBe(1);
+
+    $ignored->unignore($this->member, $this->admin);
+
+    // Sent to the admin: the member's seeded push subscription is a placeholder, so a message to the member would try to push to it.
+    expect($messages->send($this->member, [$this->admin], 'Hello', 'Are you there?'))->toBeInstanceOf(PrivateConversation::class);
 });
 
 it('finds the seeded thread and page by their words, on the database engine', function () {
