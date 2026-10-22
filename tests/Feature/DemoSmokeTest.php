@@ -495,7 +495,7 @@ it('switches the digest mail off from a signed link, and refuses an altered one'
     get($url.'x')->assertForbidden();
     expect(app(Preferences::class)->allows($this->member, 'forum.thread_updates_digest'))->toBeTrue();
 
-    get($url)->assertOk()->assertSee('Digest of new posts in threads you follow')->assertSee('/admin');
+    get($url)->assertOk()->assertSee('Digest of new posts in threads you follow')->assertSee('/'.config('demo.panel_path'));
 
     app(Preferences::class)->flush();
 
