@@ -30,6 +30,7 @@ use Filagora\Entitlements\Filament\Resources\EntitlementRequests\Pages\ViewEntit
 use Filagora\Entitlements\Filament\Resources\UserEntitlementGrants\UserEntitlementGrantResource;
 use Filagora\Entitlements\Models\EntitlementRequest;
 use Filagora\Entitlements\Services\EntitlementResolver;
+use Filagora\Forums\Contracts\SubscriptionPreferences;
 use Filagora\Forums\Filament\Pages\ModerationQueue;
 use Filagora\Forums\Filament\Resources\ForumGroups\ForumGroupResource;
 use Filagora\Forums\Filament\Resources\Forums\ForumResource;
@@ -62,9 +63,19 @@ use Filagora\Memberships\Filament\Resources\MembershipPlans\MembershipPlanResour
 use Filagora\Memberships\Models\MembershipPlan;
 use Filagora\Memberships\Models\UserMembership;
 use Filagora\Memberships\Services\Memberships;
+use Filagora\Messages\Contracts\MessagingPolicy;
 use Filagora\Messages\Models\PrivateConversation;
 use Filagora\Messages\Services\Mailbox;
 use Filagora\Messages\Services\Messages;
+use Filagora\Notifications\Bridges\ForumsBridge;
+use Filagora\Notifications\Bridges\MessagesBridge;
+use Filagora\Notifications\Bridges\PushBridge;
+use Filagora\Notifications\Enums\NotificationChannel;
+use Filagora\Notifications\Filament\RelationManagers\UserNotificationPreferencesRelationManager;
+use Filagora\Notifications\Models\NotificationPreference;
+use Filagora\Notifications\Services\Preferences;
+use Filagora\Notifications\Services\Unsubscribe;
+use Filagora\Push\Contracts\PushPreferences;
 use Filagora\Push\Enums\PushCategory;
 use Filagora\Push\Exceptions\PushRefused;
 use Filagora\Push\Notifications\WebPushAlert;
@@ -268,7 +279,8 @@ it('lets staff generate the seeded export, and the file holds what every package
 
     $file = json_decode(Storage::disk('local')->get($request->refresh()->export_path), true);
 
-    expect($file)->toHaveKeys(['generated_at', 'user', 'forums', 'email_logs', 'entitlements', 'compliance'])
+    expect($file)->toHaveKeys(['generated_at', 'user', 'forums', 'email_logs', 'entitlements', 'compliance', 'notifications'])
+        ->and(array_column($file['notifications']['preferences'], 'category'))->toContain('forum.thread_updates_digest', 'messages.received', 'forum.mention')
         ->and($file['user']['email'])->toBe($this->member->email)
         ->and($file['forums']['threads'])->not->toBeEmpty();
 });
@@ -432,4 +444,64 @@ it('badges the billing log with the failed event the seed left', function () {
 
 it('refuses a PayPal delivery on a site with no PayPal account set up', function () {
     $this->postJson('/paypal/webhook', ['id' => 'WH-X', 'event_type' => 'BILLING.SUBSCRIPTION.ACTIVATED'])->assertStatus(400);
+});
+
+it('keeps three stored notification choices for the member and defaults for everything else', function () {
+    $preferences = app(Preferences::class);
+
+    expect(NotificationPreference::where('user_id', $this->member->id)->count())->toBe(3)
+        ->and(NotificationPreference::where('user_id', $this->admin->id)->count())->toBe(0)
+        ->and($preferences->allows($this->member, 'forum.thread_updates_digest'))->toBeFalse()
+        ->and($preferences->allows($this->member, 'forum.thread_updates_instant'))->toBeTrue()
+        ->and($preferences->allows($this->member, 'messages.received', NotificationChannel::IN_APP))->toBeFalse()
+        ->and($preferences->allows($this->member, 'messages.received', NotificationChannel::PUSH))->toBeTrue()
+        ->and($preferences->canDeliver($this->member, 'forum.mention', NotificationChannel::PUSH))->toBeTrue()
+        ->and($preferences->canDeliver($this->member, 'forum.mention', NotificationChannel::IN_APP))->toBeFalse();
+});
+
+it('answers push, forums and messages from the member\'s choices', function () {
+    expect(app(PushPreferences::class))->toBeInstanceOf(PushBridge::class)
+        ->and(app(SubscriptionPreferences::class))->toBeInstanceOf(ForumsBridge::class)
+        ->and(app(MessagingPolicy::class))->toBeInstanceOf(MessagesBridge::class)
+        ->and(app(PushPreferences::class)->allows($this->member, PushCategory::MENTION))->toBeTrue();
+
+    app(Preferences::class)->set($this->member, 'forum.mention', NotificationChannel::PUSH, false);
+
+    expect(app(PushPreferences::class)->allows($this->member, PushCategory::MENTION))->toBeFalse();
+});
+
+it('shows the stored choices on the user screen to staff, and not to the member', function () {
+    actingAs($this->admin);
+
+    expect(UserResource::getRelations())->toContain(UserNotificationPreferencesRelationManager::class)
+        ->and(UserNotificationPreferencesRelationManager::canViewForRecord($this->member, EditUser::class))->toBeTrue();
+
+    actingAs($this->member);
+
+    expect(UserNotificationPreferencesRelationManager::canViewForRecord($this->member, EditUser::class))->toBeFalse();
+});
+
+it('switches the digest mail off from a signed link, and refuses an altered one', function () {
+    app(Preferences::class)->set($this->member, 'forum.thread_updates_digest', NotificationChannel::EMAIL, true);
+    $url = app(Unsubscribe::class)->url($this->member, 'forum.thread_updates_digest');
+
+    get($url.'x')->assertForbidden();
+    expect(app(Preferences::class)->allows($this->member, 'forum.thread_updates_digest'))->toBeTrue();
+
+    get($url)->assertOk()->assertSee('Digest of new posts in threads you follow')->assertSee('/admin');
+
+    app(Preferences::class)->flush();
+
+    expect(app(Preferences::class)->allows($this->member, 'forum.thread_updates_digest'))->toBeFalse();
+});
+
+it('lists the member\'s stored choices on the user screen, by label and channel', function () {
+    actingAs($this->admin);
+    Filament::setCurrentPanel('admin');
+
+    Livewire::test(UserNotificationPreferencesRelationManager::class, ['ownerRecord' => $this->member, 'pageClass' => EditUser::class])
+        ->assertCanSeeTableRecords(NotificationPreference::where('user_id', $this->member->id)->get())
+        ->assertSee('Private messages')
+        ->assertSee('On-site bell')
+        ->assertSee('Demo Admin');
 });

@@ -11,6 +11,7 @@ use Filagora\Entitlements\Filament\RelationManagers\UserEntitlementRequestsRelat
 use Filagora\Entitlements\Filament\RelationManagers\UserEntitlementsRelationManager;
 use Filagora\Entitlements\Support\Abilities;
 use Filagora\Memberships\Filament\RelationManagers\UserMembershipsRelationManager;
+use Filagora\Notifications\Filament\RelationManagers\UserNotificationPreferencesRelationManager;
 use Filament\Forms\Components\TextInput;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
@@ -77,6 +78,7 @@ class UserResource extends Resource
             UserEntitlementsRelationManager::class,
             UserEntitlementRequestsRelationManager::class,
             UserMembershipsRelationManager::class,
+            UserNotificationPreferencesRelationManager::class,
         ];
     }
 

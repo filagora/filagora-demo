@@ -37,6 +37,9 @@ use Filagora\Messages\Models\PrivateConversation;
 use Filagora\Messages\Models\PrivateConversationParticipant;
 use Filagora\Messages\Models\PrivateMessage;
 use Filagora\Messages\Services\Mailbox;
+use Filagora\Notifications\Enums\NotificationChannel;
+use Filagora\Notifications\Enums\PreferenceSource;
+use Filagora\Notifications\Services\Preferences;
 use Filagora\Push\Services\PushSubscriptions;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Storage;
@@ -83,6 +86,7 @@ class DemoSeeder extends Seeder
         $this->seedAnnouncement();
         $this->seedCompliance($member);
         $this->seedMemberships($member);
+        $this->seedNotificationChoices($admin, $member);
     }
 
     /**
@@ -317,5 +321,19 @@ class DemoSeeder extends Seeder
                 'payload' => ['id' => 'WH-DEMO-FAILED', 'event_type' => 'BILLING.SUBSCRIPTION.ACTIVATED', 'resource' => ['id' => 'I-DEMO', 'status' => 'ACTIVE']],
             ],
         );
+    }
+
+    /**
+     * Three stored choices for the member, so the user screen's list has something to show: the
+     * digest mail switched off, the bell for private messages switched off, and the bell for
+     * mentions switched off by the admin. None of them changes what the other seeded features do.
+     */
+    private function seedNotificationChoices(User $admin, User $member): void
+    {
+        $preferences = app(Preferences::class);
+
+        $preferences->set($member, 'forum.thread_updates_digest', NotificationChannel::EMAIL, false);
+        $preferences->set($member, 'messages.received', NotificationChannel::IN_APP, false);
+        $preferences->set($member, 'forum.mention', NotificationChannel::IN_APP, false, $admin, PreferenceSource::ADMIN);
     }
 }

@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "b3a987ef7847a249de54cf84be67833a",
+    "content-hash": "3087e832631f4780838368912b81b69d",
     "packages": [
         {
             "name": "anourvalar/eloquent-serialize",
@@ -1628,6 +1628,73 @@
                 "source": "https://github.com/filagora/filagora-messages/tree/v0.2.0"
             },
             "time": "2026-10-17T17:01:39+00:00"
+        },
+        {
+            "name": "filagora/filagora-notifications",
+            "version": "v0.1.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/filagora/filagora-notifications.git",
+                "reference": "e1a4c6f2f88160edd735f7d7180759ed2a9e86d6"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/filagora/filagora-notifications/zipball/e1a4c6f2f88160edd735f7d7180759ed2a9e86d6",
+                "reference": "e1a4c6f2f88160edd735f7d7180759ed2a9e86d6",
+                "shasum": ""
+            },
+            "require": {
+                "filagora/filagora-core": "^0.2.2",
+                "filament/filament": "^5.0",
+                "php": "^8.4"
+            },
+            "require-dev": {
+                "filagora/filagora-entitlements": "^0.2.2",
+                "filagora/filagora-forums": "^0.6",
+                "filagora/filagora-messages": "^0.2",
+                "filagora/filagora-push": "^0.1",
+                "larastan/larastan": "^3.0",
+                "laravel/pint": "^1.0",
+                "orchestra/testbench": "^11.0",
+                "pestphp/pest": "^4.0",
+                "pestphp/pest-plugin-laravel": "^4.0"
+            },
+            "suggest": {
+                "filagora/filagora-entitlements": "Declares the staff ability to see a person's stored choices, so it can be granted in the entitlements screens.",
+                "filagora/filagora-forums": "Bridges thread subscription delivery to the person's choices.",
+                "filagora/filagora-messages": "Bridges who may be messaged to the person's choice.",
+                "filagora/filagora-push": "Bridges push alerts to the person's choices."
+            },
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "Filagora\\Notifications\\NotificationsServiceProvider"
+                    ]
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Filagora\\Notifications\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "description": "Notification preferences for Filagora: per-person, per-category, per-channel choices, a category registry, suppression, signed unsubscribe, and bridges to push and forums.",
+            "keywords": [
+                "filagora",
+                "filament",
+                "laravel",
+                "notifications",
+                "preferences"
+            ],
+            "support": {
+                "issues": "https://github.com/filagora/filagora-notifications/issues",
+                "source": "https://github.com/filagora/filagora-notifications/tree/v0.1.0"
+            },
+            "time": "2026-10-22T14:58:00+00:00"
         },
         {
             "name": "filagora/filagora-push",

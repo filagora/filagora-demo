@@ -14,6 +14,7 @@ your own app.
 | [`filagora/filagora-compliance`](https://github.com/filagora/filagora-compliance) | Cookie consent, cookie and privacy policy versions, and privacy requests with export, erasure and retention |
 | [`filagora/filagora-logs`](https://github.com/filagora/filagora-logs) | The email log: every outgoing message, when logging is switched on |
 | [`filagora/filagora-memberships`](https://github.com/filagora/filagora-memberships) | Membership plans with a price per currency, member subscriptions, PayPal checkout and webhooks, the entitlements a membership brings, and the staff screens (plans, billing events, a person's memberships) |
+| [`filagora/filagora-notifications`](https://github.com/filagora/filagora-notifications) | What each person wants to hear about, per category and channel: a category registry, email suppression, signed unsubscribe links, bridges that answer the push, forums and messages packages, and a staff list of a person's stored choices |
 | [`filagora/filagora-forums`](https://github.com/filagora/filagora-forums) | Forum groups, forums, threads and posts with visibility and posting rules, moderation, reports, and the staff screens and moderation queue (no public frontend) |
 
 ## Run it locally (DDEV)
@@ -40,7 +41,7 @@ grant it created.
 The seeded forum has a thread waiting for approval and a reported reply: open **Queues →
 Moderation queue** to approve the thread and resolve the report, or browse **Forum →
 Forums, Threads, Posts**. The dashboard shows how much is waiting. **Logs → Email log** shows a logged message, and
-anything the demo sends from now on (logging is switched on in the seed). **Privacy and compliance → Privacy requests** has the member's data export request: open it and press *Generate export* (the file is written under `storage/app/private/exports/privacy`). The welcome thread also has a poll, a like and a follower (the member), which the forums package turns into votes, reaction counts and update emails once your pages call it. The admin has also sent the member a private message (the messages package keeps folders, read state and Trash; your pages call its services). The seeded thread and page are searchable too: the forums and cms packages register search indexes when `filagora-search` is installed, and the demo runs on its `database` engine (set `FILAGORA_SEARCH_ENGINE=meilisearch` with a Meilisearch server, then `php artisan filagora:search:reindex --sync-settings`, to try the other). The welcome post mentions the member (`@member`, matched against the new `username` column), carries a small text file, and the admin has read the thread while the member has not; the member also has a browser subscribed to push (a placeholder: nothing is sent while seeding, and the demo has no VAPID keys). **Memberships → Membership plans** has a free plan (the member holds it, and the `demo.supporter` entitlement it brings) and a paid PayPal plan priced in two currencies; the demo has no PayPal account, so the paid plan cannot be bought, but **Memberships → Billing events** shows a failed delivery (and its navigation badge), and **Members → Users → Demo Member** lists the memberships with the staff actions. **Forum → Announcements** has a published banner for signed-in users (the package ships the screen and the rules, not the page markup). **Content → Pages** has a published
+anything the demo sends from now on (logging is switched on in the seed). **Privacy and compliance → Privacy requests** has the member's data export request: open it and press *Generate export* (the file is written under `storage/app/private/exports/privacy`). The welcome thread also has a poll, a like and a follower (the member), which the forums package turns into votes, reaction counts and update emails once your pages call it. The admin has also sent the member a private message (the messages package keeps folders, read state and Trash; your pages call its services). The seeded thread and page are searchable too: the forums and cms packages register search indexes when `filagora-search` is installed, and the demo runs on its `database` engine (set `FILAGORA_SEARCH_ENGINE=meilisearch` with a Meilisearch server, then `php artisan filagora:search:reindex --sync-settings`, to try the other). The welcome post mentions the member (`@member`, matched against the new `username` column), carries a small text file, and the admin has read the thread while the member has not; the member also has a browser subscribed to push (a placeholder: nothing is sent while seeding, and the demo has no VAPID keys). **Memberships → Membership plans** has a free plan (the member holds it, and the `demo.supporter` entitlement it brings) and a paid PayPal plan priced in two currencies; the demo has no PayPal account, so the paid plan cannot be bought, but **Memberships → Billing events** shows a failed delivery (and its navigation badge), and **Members → Users → Demo Member** lists the memberships with the staff actions. **Members → Users → Demo Member** also lists the member's three stored notification choices (the digest mail off, the bell for private messages off, and the bell for mentions switched off by the admin); everything else is on its default. The unsubscribe routes are switched on in [`config/filagora-notifications.php`](config/filagora-notifications.php), so a signed link from `Unsubscribe::url()` switches the digest mail off; the notifications package also answers the push, forums and messages packages' preference questions from those choices. **Forum → Announcements** has a published banner for signed-in users (the package ships the screen and the rules, not the page markup). **Content → Pages** has a published
 "Welcome" page with a hero block and a draft "About" page: edit a block, save the draft, then publish.
 
 These passwords are public. This is a development app, never deploy it.
@@ -69,8 +70,9 @@ These passwords are public. This is a development app, never deploy it.
    `users` table and ships no Users screen.
 4. **Attach the relation managers** to your own user resource
    ([`UserResource`](app/Filament/Resources/Users/UserResource.php)):
-   `UserEntitlementsRelationManager`, `UserEntitlementRequestsRelationManager` and
-   `UserMembershipsRelationManager` (the user model also uses `HasMemberships`).
+   `UserEntitlementsRelationManager`, `UserEntitlementRequestsRelationManager`,
+   `UserMembershipsRelationManager` and `UserNotificationPreferencesRelationManager` (the user
+   model also uses `HasMemberships` and `HasNotificationPreferences`).
 5. **Grant access.** Every screen is denied until a user holds the matching entitlement,
    through a Gate ability each package maps to an entitlement key
    (`filagora-entitlements.gates`). The [seeder](database/seeders/DemoSeeder.php) gives
@@ -87,7 +89,7 @@ git clone https://github.com/filagora/filagora-forums.git
 git clone https://github.com/filagora/filagora-logs.git
 git clone https://github.com/filagora/filagora-cms.git
 git clone https://github.com/filagora/filagora-compliance.git
-# and, for the rest: -messages, -search, -push, -memberships
+# and, for the rest: -messages, -search, -push, -memberships, -notifications
 ```
 
 ```
