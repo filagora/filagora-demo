@@ -13,3 +13,4 @@ services:
       - ../../filagora-search:/var/www/filagora-search
       - ../../filagora-push:/var/www/filagora-push
       - ../../filagora-memberships:/var/www/filagora-memberships
+      - ../../filagora-notifications:/var/www/filagora-notifications
