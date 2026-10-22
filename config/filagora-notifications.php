@@ -18,7 +18,7 @@ return [
     'unsubscribe' => [
         'signed_ttl' => null,
         'view' => 'filagora-notifications::unsubscribed',
-        'manage_url' => '/admin',
+        'manage_url' => '/'.env('DEMO_PANEL_PATH', 'admin'),
     ],
 
 ];
