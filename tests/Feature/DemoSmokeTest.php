@@ -494,3 +494,14 @@ it('switches the digest mail off from a signed link, and refuses an altered one'
 
     expect(app(Preferences::class)->allows($this->member, 'forum.thread_updates_digest'))->toBeFalse();
 });
+
+it('lists the member\'s stored choices on the user screen, by label and channel', function () {
+    actingAs($this->admin);
+    Filament::setCurrentPanel('admin');
+
+    Livewire::test(UserNotificationPreferencesRelationManager::class, ['ownerRecord' => $this->member, 'pageClass' => EditUser::class])
+        ->assertCanSeeTableRecords(NotificationPreference::where('user_id', $this->member->id)->get())
+        ->assertSee('Private messages')
+        ->assertSee('On-site bell')
+        ->assertSee('Demo Admin');
+});
