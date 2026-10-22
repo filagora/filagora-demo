@@ -37,7 +37,7 @@ class AdminPanelProvider extends PanelProvider
         return $panel
             ->default()
             ->id('admin')
-            ->path('admin')
+            ->path(config('demo.panel_path'))
             ->login()
             ->sidebarCollapsibleOnDesktop()
             ->colors([

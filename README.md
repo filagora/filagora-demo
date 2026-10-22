@@ -27,7 +27,7 @@ ddev exec php artisan key:generate
 ddev exec php artisan migrate --seed
 ```
 
-Open <https://filagora-demo.ddev.site/admin> and sign in:
+Open <https://filagora-demo.ddev.site/admin> and sign in (the panel path is `DEMO_PANEL_PATH` in `.env`, default `admin`; the demo leaves `/` free for your own routes):
 
 | User | Email | Password | Can do |
 | --- | --- | --- | --- |
