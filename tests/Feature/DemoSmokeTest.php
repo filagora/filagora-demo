@@ -75,8 +75,8 @@ use Filagora\Notifications\Filament\RelationManagers\UserNotificationPreferences
 use Filagora\Notifications\Models\NotificationPreference;
 use Filagora\Notifications\Services\Preferences;
 use Filagora\Notifications\Services\Unsubscribe;
-use Filagora\Push\Enums\PushCategory;
 use Filagora\Push\Contracts\PushPreferences;
+use Filagora\Push\Enums\PushCategory;
 use Filagora\Push\Exceptions\PushRefused;
 use Filagora\Push\Notifications\WebPushAlert;
 use Filagora\Push\Services\PushNotifier;
