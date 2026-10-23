@@ -11,6 +11,7 @@ A clean Laravel 13 / Filament 5 application that installs every Filagora package
 - It is an app, not a library: `app/`, `routes/`, `bootstrap/`, `artisan`, `.env.example`. Packages come from Composer by version constraint (`composer.json`), so a package change reaches the demo only after it is tagged and the constraint is bumped, unless you are deliberately testing with a local path repository (do not commit that).
 - Panel wiring lives in `app/Providers/Filament/AdminPanelProvider.php` (every package's `...Plugin::make()`); host-side bindings (`AccessChecker` or entitlements, user model traits) live in `app/`.
 - Seeders populate every package so the README tour works (staff and member users, a moderated thread with a report, a poll, a private message, plans and billing events, pages). When a package adds a feature, extend the seed and the README tour in the same change.
+- It must not depend on, mount, seed or mention any site-specific profile package. Those belong to the application built for that site; this demo is the generic example. `tests/Feature/NoSiteProfileTest.php` enforces it: if it fails, remove the reference, do not loosen the test.
 - Smoke tests in `tests/` install-check each package. They are the proof that packages compose; run them after bumping any package.
 
 ## Commands
