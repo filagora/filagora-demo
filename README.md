@@ -32,6 +32,7 @@ Open <https://filagora-demo.ddev.site/admin> and sign in (the panel path is `DEM
 | User | Email | Password | Can do |
 | --- | --- | --- | --- |
 | Staff | `admin@example.test` | `password` | Everything (holds `filagora.*`) |
+| Frontend moderator | `moderator@example.test` | `password` | Holds only `filagora.moderate_frontend`: may moderate on your own pages (the forums services accept it), and sees no forum screen in the dashboard |
 | Member | `member@example.test` | `password` | Open the dashboard, nothing else |
 
 The seeded member has one pending entitlement request. Approve it from
@@ -76,7 +77,9 @@ These passwords are public. This is a development app, never deploy it.
 5. **Grant access.** Every screen is denied until a user holds the matching entitlement,
    through a Gate ability each package maps to an entitlement key
    (`filagora-entitlements.gates`). The [seeder](database/seeders/DemoSeeder.php) gives
-   the staff user one wildcard grant, `filagora.*`.
+   the staff user one wildcard grant, `filagora.*`, and the frontend moderator one grant of core's
+   `filagora.moderate_frontend`, which lets someone moderate on your own pages without opening
+   any dashboard screen.
 
 ## Develop the packages alongside this app
 

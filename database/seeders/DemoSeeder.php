@@ -46,7 +46,7 @@ use Illuminate\Support\Facades\Storage;
 
 /**
  * A staff user who holds every `filagora.*` entitlement through one wildcard grant, a
- * plain member, and a pending request from that member, so every screen has something
+ * frontend moderator who holds only `filagora.moderate_frontend`, a plain member, and a pending request from that member, so every screen has something
  * to show. Local use only: the passwords are public.
  */
 class DemoSeeder extends Seeder
@@ -62,6 +62,17 @@ class DemoSeeder extends Seeder
         UserEntitlementGrant::query()->firstOrCreate(
             ['user_id' => $admin->id, 'entitlement_key' => 'filagora.*', 'grant_type' => 'system'],
             ['reason' => 'Demo staff'],
+        );
+
+        $moderator = User::query()->updateOrCreate(
+            ['email' => 'moderator@example.test'],
+            ['name' => 'Demo Moderator', 'username' => 'moderator', 'password' => 'password'],
+        );
+        $moderator->forceFill(['email_verified_at' => now()])->save();
+
+        UserEntitlementGrant::query()->firstOrCreate(
+            ['user_id' => $moderator->id, 'entitlement_key' => 'filagora.moderate_frontend', 'grant_type' => 'manual'],
+            ['reason' => 'Demo frontend moderator'],
         );
 
         $member = User::query()->updateOrCreate(
