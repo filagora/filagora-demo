@@ -50,11 +50,13 @@ use Filagora\Forums\Search\ForumSearchCriteria;
 use Filagora\Forums\Services\ActiveAnnouncements;
 use Filagora\Forums\Services\AnnouncementDismissals;
 use Filagora\Forums\Services\Attachments;
+use Filagora\Forums\Services\ForumAccess;
 use Filagora\Forums\Services\Mentions;
 use Filagora\Forums\Services\Polls;
 use Filagora\Forums\Services\Reactions;
 use Filagora\Forums\Services\ReadTracking;
 use Filagora\Forums\Services\Subscriptions;
+use Filagora\Forums\Services\ThreadModeration;
 use Filagora\Logs\Filament\Resources\EmailLogs\EmailLogResource;
 use Filagora\Logs\Models\EmailLog;
 use Filagora\Memberships\Filament\RelationManagers\UserMembershipsRelationManager;
@@ -102,6 +104,22 @@ beforeEach(function () {
 
     $this->admin = User::where('email', 'admin@example.test')->sole();
     $this->member = User::where('email', 'member@example.test')->sole();
+});
+
+it('lets the frontend moderator moderate, and opens no forum screen for them', function () {
+    $moderator = User::where('email', 'moderator@example.test')->sole();
+    $thread = Thread::query()->where('is_locked', false)->firstOrFail();
+
+    actingAs($moderator);
+
+    expect(app(ForumAccess::class)->canModerate($moderator))->toBeTrue()
+        ->and(ForumResource::canViewAny())->toBeFalse()
+        ->and(ThreadResource::canViewAny())->toBeFalse()
+        ->and(ModerationQueue::canAccess())->toBeFalse();
+
+    app(ThreadModeration::class)->lock($moderator, $thread);
+
+    expect($thread->refresh()->is_locked)->toBeTrue();
 });
 
 it('passes the Filagora doctor on a migrated install', function () {
@@ -254,7 +272,7 @@ it('lets staff approve the queued thread and resolve the reported reply', functi
 it('seeds idempotently', function () {
     seed(DemoSeeder::class);
 
-    expect(User::count())->toBe(2)
+    expect(User::count())->toBe(3)
         ->and(EntitlementRequest::count())->toBe(1)
         ->and(Thread::count())->toBe(2)
         ->and(PostReport::count())->toBe(1)
