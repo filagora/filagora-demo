@@ -71,6 +71,20 @@ use Filagora\Messages\Models\PrivateConversation;
 use Filagora\Messages\Services\IgnoredUsers;
 use Filagora\Messages\Services\Mailbox;
 use Filagora\Messages\Services\Messages;
+use Filagora\Newsletters\Enums\NewsletterStatus;
+use Filagora\Newsletters\Enums\NewsletterSubscriberStatus;
+use Filagora\Newsletters\Filament\Pages\NewsletterSettings;
+use Filagora\Newsletters\Filament\Resources\NewsletterBlocks\NewsletterBlockResource;
+use Filagora\Newsletters\Filament\Resources\Newsletters\NewsletterResource;
+use Filagora\Newsletters\Filament\Resources\NewsletterSubscribers\NewsletterSubscriberResource;
+use Filagora\Newsletters\Mail\CampaignMail;
+use Filagora\Newsletters\Models\Newsletter;
+use Filagora\Newsletters\Models\NewsletterBlock;
+use Filagora\Newsletters\Models\NewsletterLinkClick;
+use Filagora\Newsletters\Models\NewsletterSubscriber;
+use Filagora\Newsletters\Notifications\ConfirmSubscription;
+use Filagora\Newsletters\Services\CampaignSender;
+use Filagora\Newsletters\Services\Subscribers;
 use Filagora\Notifications\Bridges\ForumsBridge;
 use Filagora\Notifications\Bridges\MessagesBridge;
 use Filagora\Notifications\Bridges\PushBridge;
@@ -89,6 +103,7 @@ use Filagora\Search\Engines\ArrayEngine;
 use Filagora\Search\Support\SearchEngines;
 use Filament\Facades\Filament;
 use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Notification;
 use Illuminate\Support\Facades\Storage;
 use Livewire\Livewire;
@@ -96,6 +111,7 @@ use Livewire\Livewire;
 use function Pest\Laravel\actingAs;
 use function Pest\Laravel\artisan;
 use function Pest\Laravel\get;
+use function Pest\Laravel\post;
 use function Pest\Laravel\seed;
 
 beforeEach(function () {
@@ -172,6 +188,10 @@ it('opens the dashboard and every Filagora screen for staff', function () {
         CookiePolicyVersionResource::getUrl('index'),
         PrivacyPolicyVersionResource::getUrl('index'),
         PrivacyOperationAuditResource::getUrl('index'),
+        NewsletterResource::getUrl('index'),
+        NewsletterBlockResource::getUrl('index'),
+        NewsletterSubscriberResource::getUrl('index'),
+        NewsletterSettings::getUrl(),
     ] as $url) {
         get($url)->assertOk();
     }
@@ -282,7 +302,10 @@ it('seeds idempotently', function () {
         ->and(PrivacyRequest::count())->toBe(1)
         ->and(Poll::count())->toBe(1)
         ->and(Reaction::count())->toBe(1)
-        ->and(PrivateConversation::count())->toBe(1);
+        ->and(PrivateConversation::count())->toBe(1)
+        ->and(Newsletter::count())->toBe(2)
+        ->and(NewsletterSubscriber::count())->toBe(3)
+        ->and(NewsletterBlock::count())->toBe(3);
 });
 
 it('shows the seeded banner to a signed-in member until they dismiss it, and never to a guest', function () {
@@ -546,4 +569,51 @@ it('lists the member\'s stored choices on the user screen, by label and channel'
         ->assertSee('Private messages')
         ->assertSee('On-site bell')
         ->assertSee('Demo Admin');
+});
+
+it('seeds a small newsletter list, a draft and a sent campaign with its figures', function () {
+    expect(NewsletterSubscriber::sendable()->pluck('email')->all())->toBe(['member@example.test'])
+        ->and(Newsletter::where('title', 'Welcome to the demo')->value('status'))->toBe(NewsletterStatus::Draft)
+        ->and(NewsletterLinkClick::count())->toBe(1);
+
+    actingAs($this->admin);
+
+    get(NewsletterResource::getUrl('view', ['record' => Newsletter::where('title', 'Last month')->first()]))->assertOk()->assertSee('Unique Recipients');
+});
+
+it('previews the draft campaign for staff, and shows nobody else the preview', function () {
+    $draft = Newsletter::where('title', 'Welcome to the demo')->firstOrFail();
+
+    get(route('newsletters.preview', $draft))->assertForbidden();
+
+    actingAs($this->member);
+    get(route('newsletters.preview', $draft))->assertForbidden();
+
+    actingAs($this->admin);
+    get(route('newsletters.preview', $draft))->assertOk()->assertSee('Welcome to the demo')->assertSee('See the demo')->assertSee('Preview test send');
+});
+
+it('lets a guest ask for a subscription, confirm it from the signed link, and leave', function () {
+    Notification::fake();
+
+    post('/newsletter', ['email' => 'guest@example.test', 'newsletter_consent' => '1'])->assertRedirect(route('newsletter.show'));
+
+    $guest = NewsletterSubscriber::where('normalized_email', 'guest@example.test')->firstOrFail();
+    Notification::assertSentOnDemand(ConfirmSubscription::class);
+
+    get(app(Subscribers::class)->signedConfirmationUrl($guest))->assertOk()->assertSee('Subscription confirmed.');
+    expect($guest->refresh()->status)->toBe(NewsletterSubscriberStatus::Subscribed);
+
+    get(app(Subscribers::class)->signedUnsubscribeUrl($guest))->assertOk()->assertSee('You are unsubscribed.');
+    expect($guest->refresh()->status)->toBe(NewsletterSubscriberStatus::Unsubscribed);
+});
+
+it('queues the draft for the one sendable subscriber and sends them the campaign', function () {
+    Mail::fake();
+    $draft = Newsletter::where('title', 'Welcome to the demo')->firstOrFail();
+
+    expect(app(CampaignSender::class)->queue($draft)['queued'])->toBe(1)
+        ->and($draft->refresh()->status)->toBe(NewsletterStatus::Sent);
+
+    Mail::assertSent(CampaignMail::class, fn (CampaignMail $mail) => $mail->hasTo('member@example.test'));
 });

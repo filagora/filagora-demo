@@ -12,6 +12,7 @@ use Filagora\Forums\Filament\Widgets\ModerationQueueStats;
 use Filagora\Logs\FilagoraLogsPlugin;
 use Filagora\Memberships\FilagoraMembershipsPlugin;
 use Filagora\Messages\FilagoraMessagesPlugin;
+use Filagora\Newsletters\NewslettersPlugin;
 use Filagora\Notifications\NotificationsPlugin;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\AuthenticateSession;
@@ -55,6 +56,7 @@ class AdminPanelProvider extends PanelProvider
                 FilagoraMessagesPlugin::make(),
                 FilagoraMembershipsPlugin::make(),
                 NotificationsPlugin::make(),
+                NewslettersPlugin::make(),
             ])
             ->pages([
                 Dashboard::class,
