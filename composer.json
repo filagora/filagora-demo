@@ -14,6 +14,7 @@
         "filagora/filagora-logs": "^0.2",
         "filagora/filagora-memberships": "^0.1.1",
         "filagora/filagora-messages": "^0.3",
+        "filagora/filagora-newsletters": "^0.1",
         "filagora/filagora-notifications": "^0.1",
         "filagora/filagora-push": "^0.1",
         "filagora/filagora-search": "^0.1.1",

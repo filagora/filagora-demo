@@ -37,6 +37,19 @@ use Filagora\Messages\Models\PrivateConversation;
 use Filagora\Messages\Models\PrivateConversationParticipant;
 use Filagora\Messages\Models\PrivateMessage;
 use Filagora\Messages\Services\Mailbox;
+use Filagora\Newsletters\Enums\NewsletterBlockType;
+use Filagora\Newsletters\Enums\NewsletterEventType;
+use Filagora\Newsletters\Enums\NewsletterSendStatus;
+use Filagora\Newsletters\Enums\NewsletterStatus;
+use Filagora\Newsletters\Enums\NewsletterSubscriberStatus;
+use Filagora\Newsletters\Models\Newsletter as NewsletterModel;
+use Filagora\Newsletters\Models\NewsletterBlock;
+use Filagora\Newsletters\Models\NewsletterEvent;
+use Filagora\Newsletters\Models\NewsletterLinkClick;
+use Filagora\Newsletters\Models\NewsletterSend;
+use Filagora\Newsletters\Models\NewsletterSubscriber;
+use Filagora\Newsletters\Services\ContentRenderer;
+use Filagora\Newsletters\Services\Subscribers;
 use Filagora\Notifications\Enums\NotificationChannel;
 use Filagora\Notifications\Enums\PreferenceSource;
 use Filagora\Notifications\Services\Preferences;
@@ -98,6 +111,7 @@ class DemoSeeder extends Seeder
         $this->seedCompliance($member);
         $this->seedMemberships($member);
         $this->seedNotificationChoices($admin, $member);
+        $this->seedNewsletters($member);
     }
 
     /**
@@ -346,5 +360,60 @@ class DemoSeeder extends Seeder
         $preferences->set($member, 'forum.thread_updates_digest', NotificationChannel::EMAIL, false);
         $preferences->set($member, 'messages.received', NotificationChannel::IN_APP, false);
         $preferences->set($member, 'forum.mention', NotificationChannel::IN_APP, false, $admin, PreferenceSource::ADMIN);
+    }
+
+    /**
+     * A small list (the member subscribed, one person waiting to confirm, one who left), a reusable
+     * block, a draft campaign to edit and preview, and a sent one with a delivery, an open and a
+     * click, so the campaign list, the view page figures and the block's click performance have
+     * something to show. Nothing is sent while seeding.
+     */
+    private function seedNewsletters(User $member): void
+    {
+        $subscribers = app(Subscribers::class);
+        $subscribers->subscribeFromProfile($member, '127.0.0.1', 'demo seeder');
+
+        foreach ([['waiting@example.test', NewsletterSubscriberStatus::Pending], ['left@example.test', NewsletterSubscriberStatus::Unsubscribed]] as [$email, $status]) {
+            NewsletterSubscriber::query()->firstOrCreate(
+                ['normalized_email' => $email],
+                ['email' => $email, 'name' => 'Demo '.strtok($email, '@'), 'status' => $status, 'source' => 'demo', 'unsubscribed_at' => $status === NewsletterSubscriberStatus::Unsubscribed ? now() : null],
+            );
+        }
+
+        $offer = NewsletterBlock::query()->firstOrCreate(
+            ['key' => 'demo-offer'],
+            ['name' => 'Demo offer', 'type' => NewsletterBlockType::Button, 'content' => ['button_label' => 'See the demo', 'button_url' => 'https://example.test/demo']],
+        );
+
+        $renderer = app(ContentRenderer::class);
+
+        NewsletterModel::query()->firstOrCreate(['title' => 'Welcome to the demo'], [
+            'subject' => 'Welcome to the demo',
+            'preheader' => 'A draft to edit, preview and send.',
+            'body_html' => '',
+            'content_blocks' => $renderer->preparedBlocks([
+                ['type' => 'text', 'heading' => 'Hello', 'body_html' => '<p>This campaign is a draft: open it, change it, press Preview, then send a test or queue it.</p>'],
+                ['type' => 'reusable', 'newsletter_block_id' => $offer->id],
+            ]),
+        ]);
+
+        if (! NewsletterModel::query()->where('title', 'Last month')->exists()) {
+            $sent = NewsletterModel::query()->create([
+                'title' => 'Last month',
+                'subject' => 'Last month in the demo',
+                'body_html' => '',
+                'status' => NewsletterStatus::Sent,
+                'sent_at' => now()->subWeek(),
+                'content_blocks' => $renderer->preparedBlocks([['type' => 'reusable', 'newsletter_block_id' => $offer->id]]),
+            ]);
+            $subscriber = $subscribers->forUser($member);
+            $send = NewsletterSend::query()->create(['newsletter_id' => $sent->id, 'newsletter_subscriber_id' => $subscriber?->id, 'email' => $member->email, 'normalized_email' => strtolower($member->email), 'status' => NewsletterSendStatus::Sent, 'sent_at' => now()->subWeek()]);
+
+            foreach ([NewsletterEventType::Delivered, NewsletterEventType::Opened] as $type) {
+                NewsletterEvent::query()->create(['newsletter_send_id' => $send->id, 'type' => $type, 'occurred_at' => now()->subWeek()]);
+            }
+
+            NewsletterLinkClick::query()->create(['newsletter_id' => $sent->id, 'newsletter_send_id' => $send->id, 'newsletter_block_id' => $offer->id, 'block_key' => $sent->content_blocks[1]['block_key'], 'label' => 'See the demo', 'destination_url' => 'https://example.test/demo', 'clicked_at' => now()->subDays(6)]);
+        }
     }
 }
